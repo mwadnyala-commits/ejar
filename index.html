@@ -1,78 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ejar — Property Management Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Cairo:wght@300;400;600;700;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --ink:#0c0f17;
-  --ink2:#141820;
-  --ink3:#1c2333;
-  --ink4:#232d40;
-  --line:rgba(255,255,255,0.07);
-  --line2:rgba(255,255,255,0.12);
-  --amber:#e8a830;
-  --amber2:#f5c55a;
-  --amber-dim:rgba(232,168,48,0.1);
-  --amber-glow:rgba(232,168,48,0.06);
-  --emerald:#00c988;
-  --emerald-dim:rgba(0,201,136,0.1);
-  --crimson:#ff4466;
-  --crimson-dim:rgba(255,68,102,0.1);
-  --sky:#5ba8ff;
-  --sky-dim:rgba(91,168,255,0.1);
-  --fg:#eef0f6;
-  --fg2:#8a96ae;
-  --fg3:#4a5568;
+  --ink:#05080f;--ink2:#0d1220;--ink3:#131a2e;--ink4:#192138;
+  --line:rgba(255,255,255,0.06);--line2:rgba(255,255,255,0.11);
+  --amber:#e8a830;--amber2:#f5c55a;--amber-dim:rgba(232,168,48,0.1);--amber-glow:rgba(232,168,48,0.06);
+  --emerald:#00c988;--emerald-dim:rgba(0,201,136,0.1);
+  --crimson:#ff4466;--crimson-dim:rgba(255,68,102,0.1);
+  --sky:#5ba8ff;--sky-dim:rgba(91,168,255,0.1);
+  --fg:#eef0f6;--fg2:#8a96ae;--fg3:#4a5568;
   --r:14px;
 }
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--fg);overflow-x:hidden;}
-
-/* NOISE TEXTURE */
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");}
+html,body{height:100%;background:var(--ink);color:var(--fg);overflow-x:hidden;}
+body{font-family:'DM Sans',sans-serif;}
+body.ar{font-family:'Cairo',sans-serif;}
 
 /* AMBIENT */
-.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-.amb-1{position:absolute;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(232,168,48,0.07) 0%,transparent 65%);top:-300px;right:-200px;animation:drift1 20s ease-in-out infinite;}
-.amb-2{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(91,168,255,0.05) 0%,transparent 65%);bottom:-200px;left:-150px;animation:drift2 25s ease-in-out infinite;}
-.amb-3{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,136,0.04) 0%,transparent 65%);top:40%;left:40%;animation:drift3 18s ease-in-out infinite;}
-@keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,30px)}}
-@keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
-@keyframes drift3{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,20px)}}
+.amb{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.a1{position:absolute;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(232,168,48,.07) 0%,transparent 65%);top:-250px;right:-200px;animation:df1 20s ease-in-out infinite;}
+.a2{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(91,168,255,.05) 0%,transparent 65%);bottom:-150px;left:-100px;animation:df2 25s ease-in-out infinite;}
+@keyframes df1{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,25px)}}
+@keyframes df2{0%,100%{transform:translate(0,0)}50%{transform:translate(25px,-30px)}}
 
-/* =================== AUTH =================== */
+/* AUTH */
 #auth{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
 .auth-card{position:relative;z-index:1;width:100%;max-width:420px;background:var(--ink2);border:1px solid var(--line2);border-radius:24px;padding:40px;animation:rise .5s cubic-bezier(.34,1.2,.64,1);}
-.auth-card::before{content:'';position:absolute;inset:-1px;border-radius:25px;background:linear-gradient(135deg,rgba(232,168,48,.15),transparent 50%,rgba(91,168,255,.08));pointer-events:none;z-index:-1;}
+.auth-card::before{content:'';position:absolute;inset:-1px;border-radius:25px;background:linear-gradient(135deg,rgba(232,168,48,.12),transparent 50%,rgba(91,168,255,.06));pointer-events:none;z-index:-1;}
 
-.brand{display:flex;align-items:center;gap:14px;margin-bottom:36px;}
-.brand-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--amber),#8a5c08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 8px 24px rgba(232,168,48,.3);}
-.brand-name{font-family:'Instrument Serif',serif;font-size:28px;color:var(--fg);letter-spacing:-.5px;}
-.brand-tag{font-size:10px;color:var(--fg3);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
+/* LANG TOGGLE */
+.lang-toggle{position:fixed;top:20px;right:20px;z-index:9999;display:flex;align-items:center;background:var(--ink2);border:1px solid var(--line2);border-radius:30px;padding:4px;gap:2px;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.lang-btn{padding:6px 14px;border-radius:24px;cursor:pointer;font-size:12px;font-weight:600;color:var(--fg2);transition:all .2s;border:none;background:none;font-family:inherit;}
+.lang-btn.active{background:var(--amber-dim);color:var(--amber);}
+body.ar .lang-toggle{right:auto;left:20px;}
+
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:32px;}
+.brand-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--amber),#8a5c08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 8px 24px rgba(232,168,48,.25);}
+.brand-name{font-family:'Instrument Serif',serif;font-size:28px;letter-spacing:-.5px;}
+.brand-sub{font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:1.5px;margin-top:1px;}
+body.ar .brand-sub{letter-spacing:.5px;}
 
 .auth-title{font-size:20px;font-weight:600;margin-bottom:4px;}
-.auth-desc{font-size:13px;color:var(--fg2);margin-bottom:28px;}
+.auth-desc{font-size:13px;color:var(--fg2);margin-bottom:26px;}
 
-.tabs{display:flex;gap:4px;background:var(--ink3);border-radius:10px;padding:4px;margin-bottom:28px;}
+.tabs{display:flex;gap:4px;background:var(--ink3);border-radius:10px;padding:4px;margin-bottom:26px;}
 .tab{flex:1;padding:9px;text-align:center;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--fg3);transition:all .2s;}
 .tab.active{background:var(--ink4);color:var(--fg);box-shadow:0 2px 8px rgba(0,0,0,.4);}
 
-.field{margin-bottom:16px;}
-.label{display:block;font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;}
-.input{width:100%;background:var(--ink3);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;color:var(--fg);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all .2s;}
-.input:focus{border-color:var(--amber);background:var(--ink4);box-shadow:0 0 0 3px rgba(232,168,48,.08);}
+.field{margin-bottom:15px;}
+.label{display:block;font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px;}
+body.ar .label{letter-spacing:.2px;}
+.input{width:100%;background:var(--ink3);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;color:var(--fg);font-family:inherit;font-size:14px;outline:none;transition:all .2s;}
+.input:focus{border-color:var(--amber);background:var(--ink4);box-shadow:0 0 0 3px var(--amber-glow);}
 .input::placeholder{color:var(--fg3);}
 select.input option{background:var(--ink3);}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:none;white-space:nowrap;}
-.btn-amber{background:linear-gradient(135deg,var(--amber),#8a5c08);color:#0c0f17;box-shadow:0 4px 16px rgba(232,168,48,.25);}
-.btn-amber:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,168,48,.4);}
-.btn-amber:active{transform:translateY(0);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:none;white-space:nowrap;}
+.btn-amber{background:linear-gradient(135deg,var(--amber),#8a5c08);color:#05080f;box-shadow:0 4px 16px rgba(232,168,48,.2);}
+.btn-amber:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,168,48,.35);}
 .btn-ghost{background:var(--ink4);color:var(--fg);border:1px solid var(--line2);}
 .btn-ghost:hover{border-color:var(--amber);color:var(--amber);}
 .btn-red{background:var(--crimson-dim);color:var(--crimson);border:1px solid rgba(255,68,102,.2);}
@@ -80,62 +72,62 @@ select.input option{background:var(--ink3);}
 .btn-full{width:100%;}
 .btn-sm{padding:7px 14px;font-size:12px;border-radius:8px;}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+.err-msg{color:var(--crimson);font-size:12px;margin-top:10px;text-align:center;min-height:16px;}
+.ok-msg{color:var(--emerald);font-size:12px;margin-top:10px;text-align:center;}
 
-.err-msg{color:var(--crimson);font-size:12px;margin-top:12px;text-align:center;min-height:16px;}
-.ok-msg{color:var(--emerald);font-size:12px;margin-top:12px;text-align:center;}
-
-/* =================== APP =================== */
+/* APP */
 #app{display:none;height:100vh;position:relative;z-index:1;}
 .layout{display:flex;height:100vh;}
 
 /* SIDEBAR */
-.sidebar{width:256px;background:var(--ink2);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10;}
-.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(232,168,48,.2),transparent);}
-
-.sb-header{padding:24px 20px 20px;border-bottom:1px solid var(--line);}
+.sidebar{width:252px;background:var(--ink2);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;}
+body.ar .sidebar{border-right:none;border-left:1px solid var(--line);}
+.sb-header{padding:22px 18px 18px;border-bottom:1px solid var(--line);}
 .sb-brand{display:flex;align-items:center;gap:10px;}
 .sb-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--amber),#8a5c08);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
 .sb-name{font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:-.3px;}
 .sb-ver{font-size:9px;color:var(--fg3);text-transform:uppercase;letter-spacing:1.5px;margin-top:1px;}
-
-.sb-nav{flex:1;padding:16px 12px;overflow-y:auto;}
-.nav-group{margin-bottom:24px;}
-.nav-group-label{font-size:9px;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:2px;padding:0 10px;margin-bottom:6px;}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto;}
+.nav-group{margin-bottom:22px;}
+.nav-group-label{font-size:9px;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:2px;padding:0 10px;margin-bottom:5px;}
+body.ar .nav-group-label{letter-spacing:.5px;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:500;color:var(--fg2);transition:all .15s;margin-bottom:1px;position:relative;}
 .nav-item:hover{background:var(--ink3);color:var(--fg);}
 .nav-item.active{background:var(--amber-dim);color:var(--amber);}
 .nav-item.active::after{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--amber);border-radius:0 3px 3px 0;}
+body.ar .nav-item.active::after{left:auto;right:0;border-radius:3px 0 0 3px;}
 .nav-icon{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
 .nav-badge{margin-left:auto;background:var(--crimson);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;}
-
-.sb-footer{padding:16px 20px;border-top:1px solid var(--line);}
+body.ar .nav-badge{margin-left:0;margin-right:auto;}
+.sb-footer{padding:14px 18px;border-top:1px solid var(--line);}
 .user-row{display:flex;align-items:center;gap:10px;}
-.user-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#5a3808);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#0c0f17;flex-shrink:0;}
-.user-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
-.user-email{font-size:10px;color:var(--fg3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
-.logout-btn{margin-left:auto;background:none;border:none;color:var(--fg3);cursor:pointer;padding:6px;border-radius:7px;font-size:14px;transition:all .2s;flex-shrink:0;}
+.user-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#5a3808);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#05080f;flex-shrink:0;}
+.user-name-el{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
+.user-email-el{font-size:10px;color:var(--fg3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
+.logout-btn{margin-left:auto;background:none;border:none;color:var(--fg3);cursor:pointer;padding:5px;border-radius:7px;font-size:14px;transition:all .2s;flex-shrink:0;}
+body.ar .logout-btn{margin-left:0;margin-right:auto;}
 .logout-btn:hover{background:var(--crimson-dim);color:var(--crimson);}
-.plan-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(90deg,rgba(232,168,48,.12),rgba(232,168,48,.06));border:1px solid rgba(232,168,48,.2);border-radius:20px;padding:4px 10px;font-size:10px;color:var(--amber);font-weight:600;margin-top:10px;width:100%;justify-content:center;}
+.plan-badge{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--amber-dim);border:1px solid rgba(232,168,48,.2);border-radius:20px;padding:4px 10px;font-size:10px;color:var(--amber);font-weight:600;margin-top:10px;}
 
 /* MAIN */
-.main{flex:1;overflow-y:auto;padding:32px 36px;background:var(--ink);}
-.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;gap:20px;}
-.page-title{font-family:'Instrument Serif',serif;font-size:26px;letter-spacing:-.5px;}
+.main{flex:1;overflow-y:auto;padding:30px 34px;background:var(--ink);}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:30px;gap:20px;}
+.page-title{font-family:'Instrument Serif',serif;font-size:25px;letter-spacing:-.4px;}
 .page-sub{font-size:12px;color:var(--fg2);margin-top:4px;}
-.topbar-actions{display:flex;gap:10px;flex-shrink:0;align-items:center;}
+.topbar-actions{display:flex;gap:10px;flex-shrink:0;}
 
-/* STATS GRID */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
-.stat-card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);padding:22px;position:relative;overflow:hidden;transition:all .25s;animation:rise .4s ease both;cursor:default;}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:26px;}
+.stat-card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:all .25s;animation:rise .4s ease both;cursor:default;}
 .stat-card:hover{border-color:rgba(232,168,48,.2);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.3);}
-.stat-shine{position:absolute;top:0;right:0;width:70px;height:70px;border-radius:0 14px 0 70px;opacity:.08;}
+.stat-shine{position:absolute;top:0;right:0;width:65px;height:65px;border-radius:0 14px 0 65px;opacity:.08;}
 .stat-card:nth-child(1) .stat-shine{background:var(--amber);}
 .stat-card:nth-child(2) .stat-shine{background:var(--emerald);}
 .stat-card:nth-child(3) .stat-shine{background:var(--sky);}
 .stat-card:nth-child(4) .stat-shine{background:var(--crimson);}
-.stat-icon{font-size:18px;margin-bottom:16px;opacity:.8;}
-.stat-num{font-family:'Instrument Serif',serif;font-size:32px;line-height:1;margin-bottom:4px;letter-spacing:-.5px;}
-.stat-label{font-size:11px;color:var(--fg2);font-weight:500;}
+.stat-icon{font-size:18px;margin-bottom:14px;opacity:.8;}
+.stat-num{font-family:'Instrument Serif',serif;font-size:30px;line-height:1;margin-bottom:4px;letter-spacing:-.5px;}
+.stat-label{font-size:11px;color:var(--fg2);}
 .stat-card:nth-child(1) .stat-num{color:var(--amber);}
 .stat-card:nth-child(2) .stat-num{color:var(--emerald);}
 .stat-card:nth-child(3) .stat-num{color:var(--sky);}
@@ -143,91 +135,91 @@ select.input option{background:var(--ink3);}
 
 /* CARD */
 .card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;animation:rise .4s ease both;}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--line);}
-.card-title{font-size:13px;font-weight:600;color:var(--fg);}
-.card-action{font-size:11px;color:var(--amber);cursor:pointer;font-weight:600;transition:opacity .2s;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:17px 22px;border-bottom:1px solid var(--line);}
+.card-title{font-size:13px;font-weight:600;}
+.card-action{font-size:11px;color:var(--amber);cursor:pointer;font-weight:600;}
 .card-action:hover{opacity:.7;}
 
-/* TWO COL */
-.two-col{display:grid;grid-template-columns:1fr 320px;gap:18px;}
-.two-equal{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.two-col{display:grid;grid-template-columns:1fr 310px;gap:17px;}
+.two-equal{display:grid;grid-template-columns:1fr 1fr;gap:17px;}
 
 /* TABLE */
 .table{width:100%;border-collapse:collapse;}
-.table th{font-size:10px;font-weight:700;color:var(--fg3);text-align:left;padding:11px 24px;border-bottom:1px solid var(--line);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;}
-.table td{padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;vertical-align:middle;}
+.table th{font-size:10px;font-weight:700;color:var(--fg3);text-align:left;padding:11px 22px;border-bottom:1px solid var(--line);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;}
+body.ar .table th{text-align:right;}
+.table td{padding:13px 22px;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;vertical-align:middle;}
 .table tr:last-child td{border-bottom:none;}
 .table tr:hover td{background:rgba(255,255,255,.015);}
-.cell-primary{font-weight:600;font-size:13px;color:var(--fg);}
-.cell-secondary{font-size:11px;color:var(--fg2);margin-top:2px;}
+.cell-p{font-weight:600;font-size:13px;}
+.cell-s{font-size:11px;color:var(--fg2);margin-top:2px;}
 
 /* BADGE */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
-.badge-green{background:var(--emerald-dim);color:var(--emerald);}
-.badge-red{background:var(--crimson-dim);color:var(--crimson);}
-.badge-amber{background:var(--amber-dim);color:var(--amber);}
-.badge-sky{background:var(--sky-dim);color:var(--sky);}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.b-green{background:var(--emerald-dim);color:var(--emerald);}
+.b-red{background:var(--crimson-dim);color:var(--crimson);}
+.b-amber{background:var(--amber-dim);color:var(--amber);}
+.b-sky{background:var(--sky-dim);color:var(--sky);}
 
 /* REMINDERS */
-.rem-item{display:flex;align-items:center;gap:12px;padding:13px 24px;border-bottom:1px solid rgba(255,255,255,.03);transition:background .15s;}
-.rem-item:last-child{border-bottom:none;}
-.rem-item:hover{background:rgba(255,255,255,.015);}
-.rem-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.rem{display:flex;align-items:center;gap:11px;padding:12px 22px;border-bottom:1px solid rgba(255,255,255,.03);transition:background .15s;}
+.rem:last-child{border-bottom:none;}
+.rem:hover{background:rgba(255,255,255,.015);}
+.rem-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .rem-body{flex:1;}
 .rem-title{font-size:13px;font-weight:500;}
 .rem-sub{font-size:11px;color:var(--fg2);margin-top:1px;}
 .rem-date{font-size:11px;color:var(--fg3);white-space:nowrap;}
 
 /* TENANT CARDS */
-.tenant-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:18px;}
-.tenant-card{background:var(--ink3);border:1px solid var(--line);border-radius:12px;padding:20px;transition:all .2s;}
-.tenant-card:hover{border-color:rgba(232,168,48,.2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.25);}
-.t-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
-.t-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;}
+.tenant-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px;padding:16px;}
+.t-card{background:var(--ink3);border:1px solid var(--line);border-radius:12px;padding:18px;transition:all .2s;}
+.t-card:hover{border-color:rgba(232,168,48,.2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.25);}
+.t-head{display:flex;align-items:center;gap:11px;margin-bottom:14px;}
+.t-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;}
 .t-name{font-size:14px;font-weight:600;}
-.t-unit{font-size:11px;color:var(--fg2);margin-top:2px;}
-.t-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.t-info-label{font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
-.t-info-val{font-size:12px;font-weight:600;}
+.t-prop{font-size:11px;color:var(--fg2);margin-top:2px;}
+.t-info{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.ti-label{font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.ti-val{font-size:12px;font-weight:600;}
 
-/* PROGRESS BAR */
+/* PROGRESS */
 .prog-track{background:var(--ink3);border-radius:4px;height:6px;overflow:hidden;}
 .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--amber),var(--amber2));transition:width .8s ease;}
 
-/* CHART BARS */
-.chart-row{margin-bottom:16px;}
-.chart-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:var(--fg2);}
+/* CHART */
+.chart-row{margin-bottom:15px;}
+.chart-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:var(--fg2);}
 .chart-label span:last-child{color:var(--amber);font-weight:600;}
 
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--ink2);border:1px solid var(--line2);border-radius:22px;width:520px;max-width:100%;padding:32px;animation:rise .22s cubic-bezier(.34,1.2,.64,1);max-height:90vh;overflow-y:auto;}
-.modal-title{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:24px;letter-spacing:-.3px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.modal{background:var(--ink2);border:1px solid var(--line2);border-radius:22px;width:520px;max-width:100%;padding:30px;animation:rise .22s cubic-bezier(.34,1.2,.64,1);max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:22px;letter-spacing:-.3px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
 .form-full{grid-column:1/-1;}
-.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid var(--line);}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);}
 
 /* VIEWS */
 .view{display:none;}
 .view.active{display:block;}
 
-/* EMPTY */
-.empty-state{padding:60px 40px;text-align:center;}
-.empty-icon{font-size:44px;opacity:.2;margin-bottom:16px;}
+/* EMPTY / LOADING */
+.empty-state{padding:56px 40px;text-align:center;}
+.empty-icon{font-size:42px;opacity:.2;margin-bottom:14px;}
 .empty-text{font-size:13px;color:var(--fg2);line-height:1.6;}
-
-/* LOADING */
 .loading-state{display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:var(--fg2);font-size:13px;}
-.spinner{width:18px;height:18px;border:2px solid var(--line2);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+.spinner{width:17px;height:17px;border:2px solid var(--line2);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
 
 /* TOAST */
-.toast{position:fixed;bottom:28px;right:28px;background:var(--ink2);border:1px solid var(--emerald);border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:10px;font-size:13px;z-index:9999;transform:translateX(120px);opacity:0;transition:all .35s cubic-bezier(.34,1.3,.64,1);box-shadow:0 16px 48px rgba(0,0,0,.5);max-width:300px;}
+.toast{position:fixed;bottom:26px;right:26px;background:var(--ink2);border:1px solid var(--emerald);border-radius:12px;padding:12px 17px;display:flex;align-items:center;gap:10px;font-size:13px;z-index:9999;transform:translateX(120px);opacity:0;transition:all .35s cubic-bezier(.34,1.3,.64,1);box-shadow:0 16px 48px rgba(0,0,0,.5);max-width:300px;}
+body.ar .toast{right:auto;left:26px;transform:translateX(-120px);}
+body.ar .toast.show{transform:translateX(0);}
 .toast.show{transform:translateX(0);opacity:1;}
-.toast.is-error{border-color:var(--crimson);}
+.toast.is-err{border-color:var(--crimson);}
 
-/* ANIM */
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+/* ANIMS */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 .stat-card:nth-child(1){animation-delay:.04s}
 .stat-card:nth-child(2){animation-delay:.08s}
@@ -235,47 +227,48 @@ select.input option{background:var(--ink3);}
 .stat-card:nth-child(4){animation-delay:.16s}
 
 @media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}
-@media(max-width:900px){.sidebar{width:220px}.main{padding:20px 22px}}
 @media(max-width:700px){.sidebar{display:none}.main{padding:16px}.stats-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
+<div class="amb"><div class="a1"></div><div class="a2"></div></div>
 
-<div class="ambient"><div class="amb-1"></div><div class="amb-2"></div><div class="amb-3"></div></div>
+<!-- LANG TOGGLE -->
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" onclick="setLang('ar')">ع</button>
+</div>
 
-<!-- ========== AUTH ========== -->
+<!-- AUTH -->
 <div id="auth">
   <div class="auth-card">
     <div class="brand">
       <div class="brand-icon">🏢</div>
       <div>
         <div class="brand-name">Ejar</div>
-        <div class="brand-tag">Property Management OS</div>
+        <div class="brand-sub" id="brand-sub">Property Management OS</div>
       </div>
     </div>
-
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('login')">Sign In</div>
-      <div class="tab" onclick="switchTab('register')">Create Account</div>
+      <div class="tab active" id="tab-login" onclick="switchTab('login')" data-en="Sign In" data-ar="تسجيل الدخول">Sign In</div>
+      <div class="tab" id="tab-reg" onclick="switchTab('register')" data-en="Create Account" data-ar="حساب جديد">Create Account</div>
     </div>
-
     <!-- LOGIN -->
     <div id="login-panel">
-      <div class="auth-title">Welcome back</div>
-      <div class="auth-desc">Sign in to manage your properties</div>
-      <div class="field"><label class="label">Email address</label><input class="input" type="email" id="l-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')login()"></div>
-      <div class="field"><label class="label">Password</label><input class="input" type="password" id="l-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')login()"></div>
+      <div class="auth-title" id="auth-title-login">Welcome back</div>
+      <div class="auth-desc" id="auth-desc-login">Sign in to manage your properties</div>
+      <div class="field"><label class="label" id="lbl-email-l">Email Address</label><input class="input" type="email" id="l-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')login()"></div>
+      <div class="field"><label class="label" id="lbl-pass-l">Password</label><input class="input" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()"></div>
       <button class="btn btn-amber btn-full" id="l-btn" onclick="login()">Sign in →</button>
       <div class="err-msg" id="l-err"></div>
     </div>
-
     <!-- REGISTER -->
     <div id="register-panel" style="display:none">
-      <div class="auth-title">Get started free</div>
-      <div class="auth-desc">Create your account in seconds</div>
-      <div class="field"><label class="label">Full Name</label><input class="input" type="text" id="r-name" placeholder="John Smith"></div>
-      <div class="field"><label class="label">Email address</label><input class="input" type="email" id="r-email" placeholder="you@example.com"></div>
-      <div class="field"><label class="label">Password</label><input class="input" type="password" id="r-pass" placeholder="Min. 6 characters"></div>
+      <div class="auth-title" id="auth-title-reg">Get started free</div>
+      <div class="auth-desc" id="auth-desc-reg">Create your account in seconds</div>
+      <div class="field"><label class="label" id="lbl-name-r">Full Name</label><input class="input" type="text" id="r-name" placeholder="Mohammed Al-Amri"></div>
+      <div class="field"><label class="label" id="lbl-email-r">Email Address</label><input class="input" type="email" id="r-email" placeholder="you@example.com"></div>
+      <div class="field"><label class="label" id="lbl-pass-r">Password</label><input class="input" type="password" id="r-pass" placeholder="Min. 6 characters"></div>
       <button class="btn btn-amber btn-full" id="r-btn" onclick="register()">Create Account →</button>
       <div class="err-msg" id="r-err"></div>
       <div class="ok-msg" id="r-ok"></div>
@@ -283,91 +276,67 @@ select.input option{background:var(--ink3);}
   </div>
 </div>
 
-<!-- ========== APP ========== -->
+<!-- APP -->
 <div id="app">
   <div class="layout">
-
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sb-header">
         <div class="sb-brand">
           <div class="sb-icon">🏢</div>
-          <div>
-            <div class="sb-name">Ejar</div>
-            <div class="sb-ver">v2.0 · Pro</div>
-          </div>
+          <div><div class="sb-name">Ejar</div><div class="sb-ver" id="sb-ver">Property OS · Pro</div></div>
         </div>
       </div>
-
       <nav class="sb-nav">
         <div class="nav-group">
-          <div class="nav-group-label">Overview</div>
-          <div class="nav-item active" onclick="showView('dashboard',this)"><span class="nav-icon">⊞</span>Dashboard</div>
-          <div class="nav-item" onclick="showView('properties',this)"><span class="nav-icon">⌂</span>Properties</div>
-          <div class="nav-item" onclick="showView('tenants',this)"><span class="nav-icon">○</span>Tenants</div>
+          <div class="nav-group-label" id="nav-lbl-overview">Overview</div>
+          <div class="nav-item active" onclick="showView('dashboard',this)" data-key="nav-dashboard"><span class="nav-icon">⊞</span><span id="nav-dashboard">Dashboard</span></div>
+          <div class="nav-item" onclick="showView('properties',this)" data-key="nav-properties"><span class="nav-icon">⌂</span><span id="nav-properties">Properties</span></div>
+          <div class="nav-item" onclick="showView('tenants',this)" data-key="nav-tenants"><span class="nav-icon">○</span><span id="nav-tenants">Tenants</span></div>
         </div>
         <div class="nav-group">
-          <div class="nav-group-label">Finance</div>
-          <div class="nav-item" onclick="showView('payments',this)"><span class="nav-icon">◈</span>Payments<span class="nav-badge" id="overdue-badge" style="display:none">0</span></div>
-          <div class="nav-item" onclick="showView('analytics',this)"><span class="nav-icon">↗</span>Analytics</div>
+          <div class="nav-group-label" id="nav-lbl-finance">Finance</div>
+          <div class="nav-item" onclick="showView('payments',this)" data-key="nav-payments"><span class="nav-icon">◈</span><span id="nav-payments">Payments</span><span class="nav-badge" id="overdue-badge" style="display:none">0</span></div>
+          <div class="nav-item" onclick="showView('analytics',this)" data-key="nav-analytics"><span class="nav-icon">↗</span><span id="nav-analytics">Analytics</span></div>
         </div>
         <div class="nav-group">
-          <div class="nav-group-label">Management</div>
-          <div class="nav-item" onclick="showView('maintenance',this)"><span class="nav-icon">⚙</span>Maintenance</div>
-          <div class="nav-item" onclick="showView('contracts',this)"><span class="nav-icon">☰</span>Contracts</div>
+          <div class="nav-group-label" id="nav-lbl-manage">Management</div>
+          <div class="nav-item" onclick="showView('maintenance',this)" data-key="nav-maintenance"><span class="nav-icon">⚙</span><span id="nav-maintenance">Maintenance</span></div>
+          <div class="nav-item" onclick="showView('contracts',this)" data-key="nav-contracts"><span class="nav-icon">☰</span><span id="nav-contracts">Contracts</span></div>
         </div>
       </nav>
-
       <div class="sb-footer">
         <div class="user-row">
           <div class="user-av" id="user-av">J</div>
-          <div style="min-width:0;flex:1">
-            <div class="user-name" id="user-name">—</div>
-            <div class="user-email" id="user-email">—</div>
-          </div>
+          <div style="min-width:0;flex:1"><div class="user-name-el" id="user-name-el">—</div><div class="user-email-el" id="user-email-el">—</div></div>
           <button class="logout-btn" onclick="logout()" title="Sign out">⏻</button>
         </div>
-        <div class="plan-badge">✦ Professional Plan · Active</div>
+        <div class="plan-badge">✦ <span id="plan-text">Professional Plan · Active</span></div>
       </div>
     </aside>
 
     <!-- MAIN -->
     <main class="main">
-
       <!-- DASHBOARD -->
       <div class="view active" id="view-dashboard">
         <div class="topbar">
-          <div>
-            <div class="page-title" id="dash-greeting">Good morning</div>
-            <div class="page-sub" id="dash-date">Loading...</div>
-          </div>
+          <div><div class="page-title" id="dash-greeting">Good morning 👋</div><div class="page-sub" id="dash-date">—</div></div>
           <div class="topbar-actions">
-            <button class="btn btn-ghost btn-sm" onclick="openModal('property-modal')">+ Property</button>
-            <button class="btn btn-amber btn-sm" onclick="openModal('payment-modal')">+ Record Payment</button>
+            <button class="btn btn-ghost btn-sm" id="btn-add-prop" onclick="openModal('property-modal')">+ Property</button>
+            <button class="btn btn-amber btn-sm" id="btn-add-pay" onclick="openModal('payment-modal')">+ Payment</button>
           </div>
         </div>
-
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">⌂</div><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total Properties</div></div>
-          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">✓</div><div class="stat-num" id="stat-occupied">—</div><div class="stat-label">Occupied</div></div>
-          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">◈</div><div class="stat-num" id="stat-revenue">—</div><div class="stat-label">Monthly Revenue</div></div>
-          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">!</div><div class="stat-num" id="stat-overdue">—</div><div class="stat-label">Overdue Payments</div></div>
+          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">⌂</div><div class="stat-num" id="s-total">—</div><div class="stat-label" id="sl-total">Total Properties</div></div>
+          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">✓</div><div class="stat-num" id="s-occ">—</div><div class="stat-label" id="sl-occ">Occupied</div></div>
+          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">◈</div><div class="stat-num" id="s-rev">—</div><div class="stat-label" id="sl-rev">Monthly Revenue</div></div>
+          <div class="stat-card"><div class="stat-shine"></div><div class="stat-icon">!</div><div class="stat-num" id="s-late">—</div><div class="stat-label" id="sl-late">Overdue</div></div>
         </div>
-
         <div class="two-col">
-          <div class="card">
-            <div class="card-head"><span class="card-title">Properties Overview</span><span class="card-action" onclick="showView('properties',null)">View all →</span></div>
-            <div id="dash-properties-table"></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:16px">
-            <div class="card">
-              <div class="card-head"><span class="card-title">Reminders & Alerts</span></div>
-              <div id="dash-reminders"></div>
-            </div>
-            <div class="card">
-              <div class="card-head"><span class="card-title">This Month</span></div>
-              <div id="dash-month-summary" style="padding:18px 22px"></div>
-            </div>
+          <div class="card"><div class="card-head"><span class="card-title" id="ct-props-overview">Properties Overview</span><span class="card-action" id="ca-view-all" onclick="showView('properties',null)">View all →</span></div><div id="dash-props-table"></div></div>
+          <div style="display:flex;flex-direction:column;gap:15px">
+            <div class="card"><div class="card-head"><span class="card-title" id="ct-reminders">Reminders & Alerts</span></div><div id="dash-reminders"></div></div>
+            <div class="card"><div class="card-head"><span class="card-title" id="ct-this-month">This Month</span></div><div id="dash-summary" style="padding:17px 22px"></div></div>
           </div>
         </div>
       </div>
@@ -375,614 +344,660 @@ select.input option{background:var(--ink3);}
       <!-- PROPERTIES -->
       <div class="view" id="view-properties">
         <div class="topbar">
-          <div><div class="page-title">Properties</div><div class="page-sub">All your rental units in one place</div></div>
-          <button class="btn btn-amber btn-sm" onclick="openModal('property-modal')">+ Add Property</button>
+          <div><div class="page-title" id="pg-properties">Properties</div><div class="page-sub" id="pg-properties-sub">All your rental units</div></div>
+          <button class="btn btn-amber btn-sm" id="btn-add-prop2" onclick="openModal('property-modal')">+ Add Property</button>
         </div>
-        <div class="card"><div id="properties-content"><div class="loading-state"><div class="spinner"></div>Loading...</div></div></div>
+        <div class="card"><div id="properties-content"><div class="loading-state"><div class="spinner"></div><span id="loading-text">Loading...</span></div></div></div>
       </div>
 
       <!-- TENANTS -->
       <div class="view" id="view-tenants">
         <div class="topbar">
-          <div><div class="page-title">Tenants</div><div class="page-sub" id="tenants-sub">—</div></div>
-          <button class="btn btn-amber btn-sm" onclick="openModal('tenant-modal')">+ Add Tenant</button>
+          <div><div class="page-title" id="pg-tenants">Tenants</div><div class="page-sub" id="tenants-sub">—</div></div>
+          <button class="btn btn-amber btn-sm" id="btn-add-tenant" onclick="openModal('tenant-modal')">+ Add Tenant</button>
         </div>
-        <div class="card"><div id="tenants-content"><div class="loading-state"><div class="spinner"></div>Loading...</div></div></div>
+        <div class="card"><div id="tenants-content"><div class="loading-state"><div class="spinner"></div></div></div></div>
       </div>
 
       <!-- PAYMENTS -->
       <div class="view" id="view-payments">
         <div class="topbar">
-          <div><div class="page-title">Payments</div><div class="page-sub">Track all rent collections</div></div>
-          <button class="btn btn-amber btn-sm" onclick="openModal('payment-modal')">+ Record Payment</button>
+          <div><div class="page-title" id="pg-payments">Payments</div><div class="page-sub" id="pg-payments-sub">Track all rent collections</div></div>
+          <button class="btn btn-amber btn-sm" id="btn-add-pay2" onclick="openModal('payment-modal')">+ Record Payment</button>
         </div>
-        <div class="card"><div id="payments-content"><div class="loading-state"><div class="spinner"></div>Loading...</div></div></div>
+        <div class="card"><div id="payments-content"><div class="loading-state"><div class="spinner"></div></div></div></div>
       </div>
 
       <!-- ANALYTICS -->
       <div class="view" id="view-analytics">
-        <div class="topbar"><div><div class="page-title">Analytics</div><div class="page-sub">Portfolio performance at a glance</div></div></div>
+        <div class="topbar"><div><div class="page-title" id="pg-analytics">Analytics</div><div class="page-sub" id="pg-analytics-sub">Portfolio performance</div></div></div>
         <div class="two-equal" id="analytics-content"></div>
       </div>
 
       <!-- MAINTENANCE -->
       <div class="view" id="view-maintenance">
         <div class="topbar">
-          <div><div class="page-title">Maintenance</div><div class="page-sub" id="maint-sub">—</div></div>
-          <button class="btn btn-amber btn-sm" onclick="openModal('maintenance-modal')">+ New Request</button>
+          <div><div class="page-title" id="pg-maint">Maintenance</div><div class="page-sub" id="maint-sub">—</div></div>
+          <button class="btn btn-amber btn-sm" id="btn-add-maint" onclick="openModal('maintenance-modal')">+ New Request</button>
         </div>
-        <div class="card"><div id="maintenance-content"><div class="loading-state"><div class="spinner"></div>Loading...</div></div></div>
+        <div class="card"><div id="maintenance-content"><div class="loading-state"><div class="spinner"></div></div></div></div>
       </div>
 
       <!-- CONTRACTS -->
       <div class="view" id="view-contracts">
-        <div class="topbar"><div><div class="page-title">Contracts</div><div class="page-sub">Lease agreements overview</div></div></div>
-        <div class="card"><div id="contracts-content"><div class="loading-state"><div class="spinner"></div>Loading...</div></div></div>
+        <div class="topbar"><div><div class="page-title" id="pg-contracts">Contracts</div><div class="page-sub" id="pg-contracts-sub">Lease agreements overview</div></div></div>
+        <div class="card"><div id="contracts-content"><div class="loading-state"><div class="spinner"></div></div></div></div>
       </div>
-
     </main>
   </div>
 </div>
 
-<!-- ===== MODALS ===== -->
-
-<!-- PROPERTY -->
+<!-- MODALS -->
 <div class="modal-overlay" id="property-modal">
   <div class="modal">
-    <div class="modal-title">Add New Property</div>
+    <div class="modal-title" id="mt-property">Add New Property</div>
     <div class="form-grid">
-      <div class="field form-full"><label class="label">Property Name</label><input class="input" id="p-name" type="text" placeholder="e.g. Apartment 4B, Pearl Tower"></div>
-      <div class="field"><label class="label">Type</label><select class="input" id="p-type"><option>Apartment</option><option>Villa</option><option>Office</option><option>Retail Shop</option><option>Warehouse</option><option>Studio</option></select></div>
-      <div class="field"><label class="label">Monthly Rent</label><input class="input" id="p-rent" type="number" placeholder="0"></div>
-      <div class="field"><label class="label">Status</label><select class="input" id="p-status"><option value="vacant">Vacant</option><option value="rented">Rented</option></select></div>
-      <div class="field form-full"><label class="label">Address / Location</label><input class="input" id="p-addr" type="text" placeholder="Area, Street, Building No."></div>
-      <div class="field"><label class="label">Size (m²)</label><input class="input" id="p-size" type="number" placeholder="0"></div>
-      <div class="field"><label class="label">Bedrooms</label><input class="input" id="p-beds" type="number" placeholder="0"></div>
+      <div class="field form-full"><label class="label" id="fl-prop-name">Property Name</label><input class="input" id="p-name" type="text" placeholder="e.g. Apartment 4B, Pearl Tower"></div>
+      <div class="field"><label class="label" id="fl-prop-type">Type</label><select class="input" id="p-type"></select></div>
+      <div class="field"><label class="label" id="fl-prop-rent">Monthly Rent (QAR)</label><input class="input" id="p-rent" type="number" placeholder="0"></div>
+      <div class="field"><label class="label" id="fl-prop-status">Status</label><select class="input" id="p-status"><option value="vacant" id="opt-vacant">Vacant</option><option value="rented" id="opt-rented">Rented</option></select></div>
+      <div class="field form-full"><label class="label" id="fl-prop-addr">Address</label><input class="input" id="p-addr" type="text" placeholder="Area, Street, Building No."></div>
+      <div class="field"><label class="label" id="fl-prop-size">Size (m²)</label><input class="input" id="p-size" type="number" placeholder="0"></div>
+      <div class="field"><label class="label" id="fl-prop-beds">Bedrooms</label><input class="input" id="p-beds" type="number" placeholder="0"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('property-modal')">Cancel</button>
-      <button class="btn btn-amber btn-sm" onclick="saveProperty()">Save Property</button>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-prop" onclick="closeModal('property-modal')">Cancel</button>
+      <button class="btn btn-amber btn-sm" id="btn-save-prop" onclick="saveProperty()">Save Property</button>
     </div>
   </div>
 </div>
 
-<!-- TENANT -->
 <div class="modal-overlay" id="tenant-modal">
   <div class="modal">
-    <div class="modal-title">Add Tenant</div>
+    <div class="modal-title" id="mt-tenant">Add Tenant</div>
     <div class="form-grid">
-      <div class="field"><label class="label">Full Name</label><input class="input" id="t-name" type="text" placeholder="John Smith"></div>
-      <div class="field"><label class="label">Phone</label><input class="input" id="t-phone" type="tel" placeholder="+974 xxxx xxxx"></div>
-      <div class="field"><label class="label">QID / National ID</label><input class="input" id="t-id" type="text" placeholder="ID number"></div>
-      <div class="field"><label class="label">Email</label><input class="input" id="t-email" type="email" placeholder="tenant@email.com"></div>
-      <div class="field form-full"><label class="label">Assign Property</label><select class="input" id="t-prop"><option value="">— Select Property —</option></select></div>
-      <div class="field"><label class="label">Monthly Rent</label><input class="input" id="t-rent" type="number" placeholder="0"></div>
-      <div class="field"><label class="label">Contract Start</label><input class="input" id="t-start" type="date"></div>
-      <div class="field"><label class="label">Contract End</label><input class="input" id="t-end" type="date"></div>
+      <div class="field"><label class="label" id="fl-t-name">Full Name</label><input class="input" id="t-name" type="text" placeholder="Mohammed Al-Amri"></div>
+      <div class="field"><label class="label" id="fl-t-phone">Phone</label><input class="input" id="t-phone" type="tel" placeholder="+974 xxxx xxxx"></div>
+      <div class="field"><label class="label" id="fl-t-id">QID / National ID</label><input class="input" id="t-id" type="text" placeholder="ID number"></div>
+      <div class="field"><label class="label" id="fl-t-email">Email</label><input class="input" id="t-email" type="email" placeholder="tenant@email.com"></div>
+      <div class="field form-full"><label class="label" id="fl-t-prop">Assign Property</label><select class="input" id="t-prop"><option value="">—</option></select></div>
+      <div class="field"><label class="label" id="fl-t-rent">Monthly Rent (QAR)</label><input class="input" id="t-rent" type="number" placeholder="0"></div>
+      <div class="field"><label class="label" id="fl-t-start">Contract Start</label><input class="input" id="t-start" type="date"></div>
+      <div class="field"><label class="label" id="fl-t-end">Contract End</label><input class="input" id="t-end" type="date"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('tenant-modal')">Cancel</button>
-      <button class="btn btn-amber btn-sm" onclick="saveTenant()">Add Tenant</button>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-t" onclick="closeModal('tenant-modal')">Cancel</button>
+      <button class="btn btn-amber btn-sm" id="btn-save-t" onclick="saveTenant()">Add Tenant</button>
     </div>
   </div>
 </div>
 
-<!-- PAYMENT -->
 <div class="modal-overlay" id="payment-modal">
   <div class="modal">
-    <div class="modal-title">Record Payment</div>
+    <div class="modal-title" id="mt-payment">Record Payment</div>
     <div class="form-grid">
-      <div class="field form-full"><label class="label">Tenant</label><select class="input" id="pay-tenant"><option value="">— Select Tenant —</option></select></div>
-      <div class="field"><label class="label">Amount (QAR)</label><input class="input" id="pay-amount" type="number" placeholder="0"></div>
-      <div class="field"><label class="label">Payment Method</label><select class="input" id="pay-method"><option>Bank Transfer</option><option>Cash</option><option>Cheque</option><option>QR Pay</option><option>Credit Card</option></select></div>
-      <div class="field"><label class="label">Rent Month</label><input class="input" id="pay-month" type="month"></div>
-      <div class="field"><label class="label">Date Received</label><input class="input" id="pay-date" type="date"></div>
-      <div class="field form-full"><label class="label">Notes (Optional)</label><input class="input" id="pay-notes" type="text" placeholder="Any additional notes..."></div>
+      <div class="field form-full"><label class="label" id="fl-p-tenant">Tenant</label><select class="input" id="pay-tenant"><option value="">—</option></select></div>
+      <div class="field"><label class="label" id="fl-p-amount">Amount (QAR)</label><input class="input" id="pay-amount" type="number" placeholder="0"></div>
+      <div class="field"><label class="label" id="fl-p-method">Payment Method</label><select class="input" id="pay-method"></select></div>
+      <div class="field"><label class="label" id="fl-p-month">Rent Month</label><input class="input" id="pay-month" type="month"></div>
+      <div class="field"><label class="label" id="fl-p-date">Date Received</label><input class="input" id="pay-date" type="date"></div>
+      <div class="field form-full"><label class="label" id="fl-p-notes">Notes</label><input class="input" id="pay-notes" type="text" placeholder="..."></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('payment-modal')">Cancel</button>
-      <button class="btn btn-amber btn-sm" onclick="savePayment()">Record Payment</button>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-p" onclick="closeModal('payment-modal')">Cancel</button>
+      <button class="btn btn-amber btn-sm" id="btn-save-p" onclick="savePayment()">Record Payment</button>
     </div>
   </div>
 </div>
 
-<!-- MAINTENANCE -->
 <div class="modal-overlay" id="maintenance-modal">
   <div class="modal">
-    <div class="modal-title">New Maintenance Request</div>
+    <div class="modal-title" id="mt-maint">New Maintenance Request</div>
     <div class="form-grid">
-      <div class="field form-full"><label class="label">Property</label><select class="input" id="m-prop"><option value="">— Select Property —</option></select></div>
-      <div class="field form-full"><label class="label">Issue Description</label><input class="input" id="m-desc" type="text" placeholder="Describe the issue clearly..."></div>
-      <div class="field"><label class="label">Priority</label><select class="input" id="m-priority"><option value="urgent">🔴 Urgent</option><option value="medium">🟡 Medium</option><option value="low">🟢 Low</option></select></div>
-      <div class="field"><label class="label">Scheduled Date</label><input class="input" id="m-date" type="date"></div>
-      <div class="field form-full"><label class="label">Estimated Cost (QAR)</label><input class="input" id="m-cost" type="number" placeholder="0"></div>
+      <div class="field form-full"><label class="label" id="fl-m-prop">Property</label><select class="input" id="m-prop"><option value="">—</option></select></div>
+      <div class="field form-full"><label class="label" id="fl-m-desc">Issue Description</label><input class="input" id="m-desc" type="text" placeholder="..."></div>
+      <div class="field"><label class="label" id="fl-m-prio">Priority</label><select class="input" id="m-priority"></select></div>
+      <div class="field"><label class="label" id="fl-m-date">Scheduled Date</label><input class="input" id="m-date" type="date"></div>
+      <div class="field form-full"><label class="label" id="fl-m-cost">Estimated Cost (QAR)</label><input class="input" id="m-cost" type="number" placeholder="0"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('maintenance-modal')">Cancel</button>
-      <button class="btn btn-amber btn-sm" onclick="saveMaintenance()">Submit Request</button>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-m" onclick="closeModal('maintenance-modal')">Cancel</button>
+      <button class="btn btn-amber btn-sm" id="btn-save-m" onclick="saveMaintenance()">Submit Request</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"><span id="t-icon">✓</span><span id="t-msg">Done!</span></div>
 
 <script>
-// ======== SUPABASE CONFIG ========
-const SUPABASE_URL = 'https://fqhkbrikkgllmzosolpk.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_ZCk3SBjp9RCSvjvFtt1r6g_rrZeHhCv';
-const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+// ======== SUPABASE ========
+const SB_URL='https://fqhkbrikkgllmzosolpk.supabase.co';
+const SB_KEY='sb_publishable_ZCk3SBjp9RCSvjvFtt1r6g_rrZeHhCv';
+const {createClient}=supabase;
+const db=createClient(SB_URL,SB_KEY);
+let USER=null;
+let DATA={properties:[],tenants:[],payments:[],maintenance:[]};
 
-let USER = null;
-let DATA = { properties: [], tenants: [], payments: [], maintenance: [] };
+// ======== TRANSLATIONS ========
+const T={
+  en:{
+    lang:'en',dir:'ltr',
+    brandSub:'Property Management OS',
+    tabLogin:'Sign In',tabReg:'Create Account',
+    authTitleLogin:'Welcome back',authDescLogin:'Sign in to manage your properties',
+    authTitleReg:'Get started free',authDescReg:'Create your account in seconds',
+    lblEmailL:'Email Address',lblPassL:'Password',lblNameR:'Full Name',lblEmailR:'Email Address',lblPassR:'Password',
+    btnLogin:'Sign in →',btnReg:'Create Account →',
+    errFill:'Please fill in all fields.',errPass:'Password must be at least 6 characters.',errCreds:'Invalid email or password.',
+    okReg:'✓ Account created! You can now sign in.',
+    sbVer:'Property OS · Pro',
+    navOverview:'Overview',navDashboard:'Dashboard',navProperties:'Properties',navTenants:'Tenants',
+    navFinance:'Finance',navPayments:'Payments',navAnalytics:'Analytics',
+    navManage:'Management',navMaintenance:'Maintenance',navContracts:'Contracts',
+    planText:'Professional Plan · Active',
+    greetMorn:'Good morning',greetAfter:'Good afternoon',greetEve:'Good evening',
+    statTotal:'Total Properties',statOcc:'Occupied',statRev:'Monthly Revenue',statLate:'Overdue',
+    ctPropsOverview:'Properties Overview',caViewAll:'View all →',ctReminders:'Reminders & Alerts',ctThisMonth:'This Month',
+    pgProperties:'Properties',pgPropsSub:'All your rental units',
+    pgTenants:'Tenants',pgPayments:'Payments',pgPaySub:'Track all rent collections',
+    pgAnalytics:'Analytics',pgAnalyticsSub:'Portfolio performance',
+    pgMaint:'Maintenance',pgContracts:'Contracts',pgContractsSub:'Lease agreements overview',
+    btnAddProp:'+ Property',btnAddPay:'+ Payment',btnAddProp2:'+ Add Property',
+    btnAddTenant:'+ Add Tenant',btnAddPay2:'+ Record Payment',btnAddMaint:'+ New Request',
+    mtProp:'Add New Property',flPropName:'Property Name',flPropType:'Type',flPropRent:'Monthly Rent (QAR)',flPropStatus:'Status',flPropAddr:'Address',flPropSize:'Size (m²)',flPropBeds:'Bedrooms',
+    optVacant:'Vacant',optRented:'Rented',
+    propTypes:['Apartment','Villa','Office','Retail Shop','Warehouse','Studio'],
+    mtTenant:'Add Tenant',flTName:'Full Name',flTPhone:'Phone',flTId:'QID / National ID',flTEmail:'Email',flTProp:'Assign Property',flTRent:'Monthly Rent (QAR)',flTStart:'Contract Start',flTEnd:'Contract End',
+    mtPayment:'Record Payment',flPTenant:'Tenant',flPAmount:'Amount (QAR)',flPMethod:'Payment Method',flPMonth:'Rent Month',flPDate:'Date Received',flPNotes:'Notes',
+    payMethods:['Bank Transfer','Cash','Cheque','QR Pay','Credit Card'],
+    mtMaint:'New Maintenance Request',flMProp:'Property',flMDesc:'Issue Description',flMPrio:'Priority',flMDate:'Scheduled Date',flMCost:'Estimated Cost (QAR)',
+    maintPrios:[{v:'urgent',l:'🔴 Urgent'},{v:'medium',l:'🟡 Medium'},{v:'low',l:'🟢 Low'}],
+    btnCancel:'Cancel',btnSaveProp:'Save Property',btnSaveT:'Add Tenant',btnSaveP:'Record Payment',btnSaveM:'Submit Request',
+    loadingText:'Loading...',
+    emptyProps:'No properties yet.\nAdd your first property to get started.',
+    emptyTenants:'No tenants added yet.',emptyPayments:'No payments recorded yet.',
+    emptyMaint:'No maintenance requests yet.',emptyContracts:'No contracts yet.',emptyAnalytics:'No payment data yet.',
+    colProperty:'Property',colType:'Type',colTenant:'Tenant',colRent:'Rent/mo',colStatus:'Status',
+    colAmount:'Amount',colMonth:'Month',colMethod:'Method',colDate:'Date',colConfirmed:'Confirmed',
+    colIssue:'Issue',colPriority:'Priority',colEstCost:'Est. Cost',colSchedDate:'Date',
+    colName:'Tenant',colPhone:'Phone',colContractEnd:'Contract End',colQid:'QID',
+    colStart:'Start',colEnd:'End',
+    badgePaid:'● Paid',badgeOverdue:'● Overdue',badgeVacant:'◌ Vacant',badgeRented:'Rented',
+    badgeActive:'Active',badgeExpired:'Expired',
+    badgeOpen:'Open',badgeDone:'Done',
+    collected:'Collected',expected:'Expected',collectionRate:'Collection rate',
+    occupancyRate:'Occupancy Rate',occupied:'Occupied',vacant:'Vacant',
+    revenueHistory:'Revenue History',portfolioOverview:'Portfolio Overview',
+    allClear:'✓ All clear! No pending alerts.',
+    overdueAlert:'Overdue — ',contractExpiring:'Contract expiring — ',daysLeft:' days left',maintenanceAlert:'Maintenance — ',
+    confirmDelete:'Are you sure you want to delete this record?',
+    toastSavedProp:'Property added!',toastSavedTenant:'Tenant added!',toastSavedPayment:'Payment recorded!',toastSavedMaint:'Maintenance request submitted!',toastDeleted:'Record deleted.',
+    errPropName:'Property name is required.',errTenantName:'Tenant name is required.',errPayFields:'Please select a tenant and enter amount.',errMaintDesc:'Please describe the issue.',
+    urgentBadge:'Urgent',mediumBadge:'Medium',lowBadge:'Low',
+    expiringIn:'Expiring in ',d:'d',
+  },
+  ar:{
+    lang:'ar',dir:'rtl',
+    brandSub:'منصة إدارة العقارات',
+    tabLogin:'تسجيل الدخول',tabReg:'حساب جديد',
+    authTitleLogin:'مرحباً بعودتك',authDescLogin:'سجّل دخولك لإدارة عقاراتك',
+    authTitleReg:'ابدأ مجاناً',authDescReg:'أنشئ حسابك في ثوانٍ',
+    lblEmailL:'البريد الإلكتروني',lblPassL:'كلمة المرور',lblNameR:'الاسم الكامل',lblEmailR:'البريد الإلكتروني',lblPassR:'كلمة المرور',
+    btnLogin:'دخول ←',btnReg:'إنشاء الحساب ←',
+    errFill:'يرجى ملء جميع الحقول.',errPass:'كلمة المرور يجب أن تكون 6 أحرف على الأقل.',errCreds:'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+    okReg:'✓ تم إنشاء الحساب! يمكنك الدخول الآن.',
+    sbVer:'الإصدار الاحترافي',
+    navOverview:'عام',navDashboard:'لوحة التحكم',navProperties:'الوحدات',navTenants:'المستأجرون',
+    navFinance:'المالية',navPayments:'المدفوعات',navAnalytics:'التحليلات',
+    navManage:'الإدارة',navMaintenance:'الصيانة',navContracts:'العقود',
+    planText:'الباقة الاحترافية · نشطة',
+    greetMorn:'صباح الخير',greetAfter:'مساء الخير',greetEve:'مساء الخير',
+    statTotal:'إجمالي الوحدات',statOcc:'مؤجرة',statRev:'الإيراد الشهري',statLate:'متأخرة',
+    ctPropsOverview:'نظرة عامة على الوحدات',caViewAll:'عرض الكل ←',ctReminders:'التذكيرات والتنبيهات',ctThisMonth:'ملخص الشهر',
+    pgProperties:'الوحدات الإيجارية',pgPropsSub:'جميع وحداتك في مكان واحد',
+    pgTenants:'المستأجرون',pgPayments:'المدفوعات',pgPaySub:'تتبع جميع الإيجارات',
+    pgAnalytics:'التحليلات',pgAnalyticsSub:'أداء المحفظة العقارية',
+    pgMaint:'الصيانة',pgContracts:'العقود',pgContractsSub:'نظرة عامة على عقود الإيجار',
+    btnAddProp:'+ وحدة',btnAddPay:'+ دفعة',btnAddProp2:'+ إضافة وحدة',
+    btnAddTenant:'+ إضافة مستأجر',btnAddPay2:'+ تسجيل دفعة',btnAddMaint:'+ طلب جديد',
+    mtProp:'إضافة وحدة جديدة',flPropName:'اسم الوحدة',flPropType:'النوع',flPropRent:'الإيجار الشهري (ريال)',flPropStatus:'الحالة',flPropAddr:'العنوان',flPropSize:'المساحة (م²)',flPropBeds:'غرف النوم',
+    optVacant:'شاغرة',optRented:'مؤجرة',
+    propTypes:['شقة سكنية','فيلا','مكتب','محل تجاري','مستودع','استوديو'],
+    mtTenant:'إضافة مستأجر',flTName:'الاسم الكامل',flTPhone:'رقم الجوال',flTId:'رقم الهوية / QID',flTEmail:'البريد الإلكتروني',flTProp:'تعيين وحدة',flTRent:'الإيجار الشهري (ريال)',flTStart:'بداية العقد',flTEnd:'انتهاء العقد',
+    mtPayment:'تسجيل دفعة إيجار',flPTenant:'المستأجر',flPAmount:'المبلغ (ريال)',flPMethod:'طريقة الدفع',flPMonth:'شهر الإيجار',flPDate:'تاريخ الاستلام',flPNotes:'ملاحظات',
+    payMethods:['تحويل بنكي','نقداً','شيك','QR Pay','بطاقة ائتمانية'],
+    mtMaint:'طلب صيانة جديد',flMProp:'الوحدة',flMDesc:'وصف المشكلة',flMPrio:'الأولوية',flMDate:'التاريخ المحدد',flMCost:'التكلفة التقديرية (ريال)',
+    maintPrios:[{v:'urgent',l:'🔴 عاجل'},{v:'medium',l:'🟡 متوسط'},{v:'low',l:'🟢 منخفض'}],
+    btnCancel:'إلغاء',btnSaveProp:'حفظ الوحدة',btnSaveT:'إضافة المستأجر',btnSaveP:'تسجيل الدفعة',btnSaveM:'إرسال الطلب',
+    loadingText:'جاري التحميل...',
+    emptyProps:'لا توجد وحدات بعد.\nأضف أول وحدة للبدء.',
+    emptyTenants:'لا يوجد مستأجرون بعد.',emptyPayments:'لا توجد مدفوعات بعد.',
+    emptyMaint:'لا توجد طلبات صيانة بعد.',emptyContracts:'لا توجد عقود بعد.',emptyAnalytics:'لا توجد بيانات مدفوعات بعد.',
+    colProperty:'الوحدة',colType:'النوع',colTenant:'المستأجر',colRent:'الإيجار/شهر',colStatus:'الحالة',
+    colAmount:'المبلغ',colMonth:'الشهر',colMethod:'طريقة الدفع',colDate:'التاريخ',colConfirmed:'مؤكد',
+    colIssue:'المشكلة',colPriority:'الأولوية',colEstCost:'التكلفة التقديرية',colSchedDate:'التاريخ',
+    colName:'المستأجر',colPhone:'الجوال',colContractEnd:'انتهاء العقد',colQid:'رقم الهوية',
+    colStart:'البداية',colEnd:'الانتهاء',
+    badgePaid:'● مدفوع',badgeOverdue:'● متأخر',badgeVacant:'◌ شاغرة',badgeRented:'مؤجرة',
+    badgeActive:'ساري',badgeExpired:'منتهي',
+    badgeOpen:'جديد',badgeDone:'منتهي',
+    collected:'المحصّل',expected:'المتوقع',collectionRate:'نسبة التحصيل',
+    occupancyRate:'نسبة الإشغال',occupied:'مؤجرة',vacant:'شاغرة',
+    revenueHistory:'الإيرادات المحصّلة',portfolioOverview:'نظرة عامة على المحفظة',
+    allClear:'✓ كل شيء واضح! لا تنبيهات معلقة.',
+    overdueAlert:'إيجار متأخر — ',contractExpiring:'عقد ينتهي قريباً — ',daysLeft:' يوم متبقي',maintenanceAlert:'صيانة — ',
+    confirmDelete:'هل تريد حذف هذا السجل؟',
+    toastSavedProp:'تم إضافة الوحدة!',toastSavedTenant:'تم إضافة المستأجر!',toastSavedPayment:'تم تسجيل الدفعة!',toastSavedMaint:'تم إرسال طلب الصيانة!',toastDeleted:'تم الحذف.',
+    errPropName:'يرجى إدخال اسم الوحدة.',errTenantName:'يرجى إدخال اسم المستأجر.',errPayFields:'يرجى اختيار المستأجر وإدخال المبلغ.',errMaintDesc:'يرجى وصف المشكلة.',
+    urgentBadge:'عاجل',mediumBadge:'متوسط',lowBadge:'منخفض',
+    expiringIn:'ينتهي خلال ',d:' يوم',
+  }
+};
+
+let LANG='en';
+function t(k){return T[LANG][k]||k;}
+
+function setLang(lang){
+  LANG=lang;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',(lang==='en'&&i===0)||(lang==='ar'&&i===1)));
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  document.body.classList.toggle('ar',lang==='ar');
+  applyTranslations();
+  renderAll();
+}
+
+function applyTranslations(){
+  const l=T[LANG];
+  document.getElementById('brand-sub').textContent=l.brandSub;
+  document.getElementById('tab-login').textContent=l.tabLogin;
+  document.getElementById('tab-reg').textContent=l.tabReg;
+  document.getElementById('auth-title-login').textContent=l.authTitleLogin;
+  document.getElementById('auth-desc-login').textContent=l.authDescLogin;
+  document.getElementById('auth-title-reg').textContent=l.authTitleReg;
+  document.getElementById('auth-desc-reg').textContent=l.authDescReg;
+  document.getElementById('lbl-email-l').textContent=l.lblEmailL;
+  document.getElementById('lbl-pass-l').textContent=l.lblPassL;
+  document.getElementById('lbl-name-r').textContent=l.lblNameR;
+  document.getElementById('lbl-email-r').textContent=l.lblEmailR;
+  document.getElementById('lbl-pass-r').textContent=l.lblPassR;
+  document.getElementById('l-btn').textContent=l.btnLogin;
+  document.getElementById('r-btn').textContent=l.btnReg;
+  document.getElementById('sb-ver').textContent=l.sbVer;
+  document.getElementById('nav-lbl-overview').textContent=l.navOverview;
+  document.getElementById('nav-dashboard').textContent=l.navDashboard;
+  document.getElementById('nav-properties').textContent=l.navProperties;
+  document.getElementById('nav-tenants').textContent=l.navTenants;
+  document.getElementById('nav-lbl-finance').textContent=l.navFinance;
+  document.getElementById('nav-payments').textContent=l.navPayments;
+  document.getElementById('nav-analytics').textContent=l.navAnalytics;
+  document.getElementById('nav-lbl-manage').textContent=l.navManage;
+  document.getElementById('nav-maintenance').textContent=l.navMaintenance;
+  document.getElementById('nav-contracts').textContent=l.navContracts;
+  document.getElementById('plan-text').textContent=l.planText;
+  document.getElementById('sl-total').textContent=l.statTotal;
+  document.getElementById('sl-occ').textContent=l.statOcc;
+  document.getElementById('sl-rev').textContent=l.statRev;
+  document.getElementById('sl-late').textContent=l.statLate;
+  document.getElementById('ct-props-overview').textContent=l.ctPropsOverview;
+  document.getElementById('ca-view-all').textContent=l.caViewAll;
+  document.getElementById('ct-reminders').textContent=l.ctReminders;
+  document.getElementById('ct-this-month').textContent=l.ctThisMonth;
+  document.getElementById('pg-properties').textContent=l.pgProperties;
+  document.getElementById('pg-properties-sub').textContent=l.pgPropsSub;
+  document.getElementById('pg-tenants').textContent=l.pgTenants;
+  document.getElementById('pg-payments').textContent=l.pgPayments;
+  document.getElementById('pg-pay-sub')&&(document.getElementById('pg-pay-sub').textContent=l.pgPaySub);
+  document.getElementById('pg-analytics').textContent=l.pgAnalytics;
+  document.getElementById('pg-analytics-sub').textContent=l.pgAnalyticsSub;
+  document.getElementById('pg-maint').textContent=l.pgMaint;
+  document.getElementById('pg-contracts').textContent=l.pgContracts;
+  document.getElementById('pg-contracts-sub').textContent=l.pgContractsSub;
+  document.getElementById('btn-add-prop').textContent=l.btnAddProp;
+  document.getElementById('btn-add-pay').textContent=l.btnAddPay;
+  document.getElementById('btn-add-prop2').textContent=l.btnAddProp2;
+  document.getElementById('btn-add-tenant').textContent=l.btnAddTenant;
+  document.getElementById('btn-add-pay2').textContent=l.btnAddPay2;
+  document.getElementById('btn-add-maint').textContent=l.btnAddMaint;
+  document.getElementById('mt-property').textContent=l.mtProp;
+  document.getElementById('fl-prop-name').textContent=l.flPropName;
+  document.getElementById('fl-prop-type').textContent=l.flPropType;
+  document.getElementById('fl-prop-rent').textContent=l.flPropRent;
+  document.getElementById('fl-prop-status').textContent=l.flPropStatus;
+  document.getElementById('fl-prop-addr').textContent=l.flPropAddr;
+  document.getElementById('fl-prop-size').textContent=l.flPropSize;
+  document.getElementById('fl-prop-beds').textContent=l.flPropBeds;
+  document.getElementById('opt-vacant').textContent=l.optVacant;
+  document.getElementById('opt-rented').textContent=l.optRented;
+  const pt=document.getElementById('p-type');
+  if(pt){pt.innerHTML=l.propTypes.map(x=>`<option>${x}</option>`).join('');}
+  document.getElementById('mt-tenant').textContent=l.mtTenant;
+  document.getElementById('fl-t-name').textContent=l.flTName;
+  document.getElementById('fl-t-phone').textContent=l.flTPhone;
+  document.getElementById('fl-t-id').textContent=l.flTId;
+  document.getElementById('fl-t-email').textContent=l.flTEmail;
+  document.getElementById('fl-t-prop').textContent=l.flTProp;
+  document.getElementById('fl-t-rent').textContent=l.flTRent;
+  document.getElementById('fl-t-start').textContent=l.flTStart;
+  document.getElementById('fl-t-end').textContent=l.flTEnd;
+  document.getElementById('mt-payment').textContent=l.mtPayment;
+  document.getElementById('fl-p-tenant').textContent=l.flPTenant;
+  document.getElementById('fl-p-amount').textContent=l.flPAmount;
+  document.getElementById('fl-p-method').textContent=l.flPMethod;
+  document.getElementById('fl-p-month').textContent=l.flPMonth;
+  document.getElementById('fl-p-date').textContent=l.flPDate;
+  document.getElementById('fl-p-notes').textContent=l.flPNotes;
+  const pm=document.getElementById('pay-method');
+  if(pm){pm.innerHTML=l.payMethods.map(x=>`<option>${x}</option>`).join('');}
+  document.getElementById('mt-maint').textContent=l.mtMaint;
+  document.getElementById('fl-m-prop').textContent=l.flMProp;
+  document.getElementById('fl-m-desc').textContent=l.flMDesc;
+  document.getElementById('fl-m-prio').textContent=l.flMPrio;
+  document.getElementById('fl-m-date').textContent=l.flMDate;
+  document.getElementById('fl-m-cost').textContent=l.flMCost;
+  const mp=document.getElementById('m-priority');
+  if(mp){mp.innerHTML=l.maintPrios.map(x=>`<option value="${x.v}">${x.l}</option>`).join('');}
+  document.getElementById('btn-cancel-prop').textContent=l.btnCancel;
+  document.getElementById('btn-save-prop').textContent=l.btnSaveProp;
+  document.getElementById('btn-cancel-t').textContent=l.btnCancel;
+  document.getElementById('btn-save-t').textContent=l.btnSaveT;
+  document.getElementById('btn-cancel-p').textContent=l.btnCancel;
+  document.getElementById('btn-save-p').textContent=l.btnSaveP;
+  document.getElementById('btn-cancel-m').textContent=l.btnCancel;
+  document.getElementById('btn-save-m').textContent=l.btnSaveM;
+  document.getElementById('loading-text')&&(document.getElementById('loading-text').textContent=l.loadingText);
+}
 
 // ======== AUTH ========
-async function init() {
-  const { data: { session } } = await db.auth.getSession();
-  if (session) { USER = session.user; await launchApp(); }
-  db.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN') { USER = session.user; await launchApp(); }
-    if (event === 'SIGNED_OUT') { USER = null; showAuthScreen(); }
+async function init(){
+  applyTranslations();
+  const{data:{session}}=await db.auth.getSession();
+  if(session){USER=session.user;await launchApp();}
+  db.auth.onAuthStateChange(async(e,s)=>{
+    if(e==='SIGNED_IN'){USER=s.user;await launchApp();}
+    if(e==='SIGNED_OUT'){USER=null;showAuth();}
   });
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((el, i) =>
-    el.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1)));
-  document.getElementById('login-panel').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('register-panel').style.display = tab === 'register' ? 'block' : 'none';
-  ['l-err', 'r-err', 'r-ok'].forEach(id => document.getElementById(id).textContent = '');
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(tab==='login'&&i===0)||(tab==='register'&&i===1)));
+  document.getElementById('login-panel').style.display=tab==='login'?'block':'none';
+  document.getElementById('register-panel').style.display=tab==='register'?'block':'none';
+  ['l-err','r-err','r-ok'].forEach(id=>document.getElementById(id).textContent='');
 }
 
-async function login() {
-  const email = document.getElementById('l-email').value.trim();
-  const pass = document.getElementById('l-pass').value;
-  const btn = document.getElementById('l-btn');
-  if (!email || !pass) return showAuthError('l-err', 'Please fill in all fields.');
-  btn.disabled = true; btn.textContent = 'Signing in...';
-  const { error } = await db.auth.signInWithPassword({ email, password: pass });
-  btn.disabled = false; btn.textContent = 'Sign in →';
-  if (error) showAuthError('l-err', 'Invalid email or password. Please try again.');
+async function login(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const btn=document.getElementById('l-btn');
+  if(!email||!pass)return showErr('l-err',t('errFill'));
+  btn.disabled=true;btn.textContent='...';
+  const{error}=await db.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent=t('btnLogin');
+  if(error)showErr('l-err',t('errCreds'));
 }
 
-async function register() {
-  const name = document.getElementById('r-name').value.trim();
-  const email = document.getElementById('r-email').value.trim();
-  const pass = document.getElementById('r-pass').value;
-  const btn = document.getElementById('r-btn');
-  if (!name || !email || !pass) return showAuthError('r-err', 'Please fill in all fields.');
-  if (pass.length < 6) return showAuthError('r-err', 'Password must be at least 6 characters.');
-  btn.disabled = true; btn.textContent = 'Creating account...';
-  const { error } = await db.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
-  btn.disabled = false; btn.textContent = 'Create Account →';
-  if (error) showAuthError('r-err', error.message);
-  else {
-    document.getElementById('r-ok').textContent = '✓ Account created! You can now sign in.';
-    setTimeout(() => switchTab('login'), 2000);
-  }
+async function register(){
+  const name=document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  const btn=document.getElementById('r-btn');
+  if(!name||!email||!pass)return showErr('r-err',t('errFill'));
+  if(pass.length<6)return showErr('r-err',t('errPass'));
+  btn.disabled=true;btn.textContent='...';
+  const{error}=await db.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  btn.disabled=false;btn.textContent=t('btnReg');
+  if(error)showErr('r-err',error.message);
+  else{document.getElementById('r-ok').textContent=t('okReg');setTimeout(()=>switchTab('login'),2000);}
 }
 
-async function logout() { await db.auth.signOut(); }
+async function logout(){await db.auth.signOut();}
+function showErr(id,msg){document.getElementById(id).textContent=msg;}
+function showAuth(){document.getElementById('auth').style.display='flex';document.getElementById('app').style.display='none';}
 
-function showAuthError(id, msg) { document.getElementById(id).textContent = msg; }
-function showAuthScreen() {
-  document.getElementById('auth').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-}
-
-async function launchApp() {
-  document.getElementById('auth').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  const name = USER.user_metadata?.full_name || USER.email.split('@')[0];
-  document.getElementById('user-name').textContent = name;
-  document.getElementById('user-email').textContent = USER.email;
-  document.getElementById('user-av').textContent = name.charAt(0).toUpperCase();
-  const h = new Date().getHours();
-  document.getElementById('dash-greeting').textContent =
-    (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening') + ', ' + name + ' 👋';
-  document.getElementById('dash-date').textContent =
-    new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+async function launchApp(){
+  document.getElementById('auth').style.display='none';
+  document.getElementById('app').style.display='block';
+  const name=USER.user_metadata?.full_name||USER.email.split('@')[0];
+  document.getElementById('user-name-el').textContent=name;
+  document.getElementById('user-email-el').textContent=USER.email;
+  document.getElementById('user-av').textContent=name.charAt(0).toUpperCase();
+  const h=new Date().getHours();
+  const gr=h<12?t('greetMorn'):h<17?t('greetAfter'):t('greetEve');
+  document.getElementById('dash-greeting').textContent=gr+', '+name+' 👋';
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString(LANG==='ar'?'ar-QA':'en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   await fetchAll();
 }
 
 // ======== DATA ========
-async function fetchAll() {
-  const uid = USER.id;
-  const [p, t, pay, m] = await Promise.all([
-    db.from('units').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
-    db.from('tenants').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
-    db.from('payments').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
-    db.from('maintenance').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+async function fetchAll(){
+  const uid=USER.id;
+  const[a,b,c,d]=await Promise.all([
+    db.from('units').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
+    db.from('tenants').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
+    db.from('payments').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
+    db.from('maintenance').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
   ]);
-  DATA.properties = p.data || [];
-  DATA.tenants = t.data || [];
-  DATA.payments = pay.data || [];
-  DATA.maintenance = m.data || [];
+  DATA.properties=a.data||[];DATA.tenants=b.data||[];DATA.payments=c.data||[];DATA.maintenance=d.data||[];
   renderAll();
 }
 
-function thisMonth() {
-  const n = new Date();
-  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;
-}
+function thisMonth(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;}
 
 // ======== RENDER ========
-function renderAll() {
-  renderDashboard();
-  renderProperties();
-  renderTenants();
-  renderPayments();
-  renderAnalytics();
-  renderMaintenance();
-  renderContracts();
-  populateSelects();
-}
+function renderAll(){renderDash();renderProperties();renderTenants();renderPayments();renderAnalytics();renderMaintenance();renderContracts();populateSelects();}
 
-function renderDashboard() {
-  const total = DATA.properties.length;
-  const occupied = DATA.properties.filter(p => p.status === 'rented').length;
-  const revenue = DATA.properties.filter(p => p.status === 'rented').reduce((s, p) => s + (p.rent || 0), 0);
-  const tm = thisMonth();
-  const paidIds = new Set(DATA.payments.filter(p => p.month === tm).map(p => p.tenant_id));
-  const overdue = DATA.tenants.filter(t => !paidIds.has(t.id)).length;
+function renderDash(){
+  const total=DATA.properties.length,occ=DATA.properties.filter(p=>p.status==='rented').length;
+  const rev=DATA.properties.filter(p=>p.status==='rented').reduce((s,p)=>s+(p.rent||0),0);
+  const tm=thisMonth();
+  const paidIds=new Set(DATA.payments.filter(p=>p.month===tm).map(p=>p.tenant_id));
+  const late=DATA.tenants.filter(t=>!paidIds.has(t.id)).length;
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-occ').textContent=occ;
+  document.getElementById('s-rev').textContent=rev.toLocaleString();
+  document.getElementById('s-late').textContent=late;
+  const ob=document.getElementById('overdue-badge');
+  if(late>0){ob.textContent=late;ob.style.display='inline';}else ob.style.display='none';
 
-  document.getElementById('stat-total').textContent = total || '0';
-  document.getElementById('stat-occupied').textContent = occupied || '0';
-  document.getElementById('stat-revenue').textContent = revenue.toLocaleString();
-  document.getElementById('stat-overdue').textContent = overdue || '0';
-
-  const ob = document.getElementById('overdue-badge');
-  if (overdue > 0) { ob.textContent = overdue; ob.style.display = 'inline'; }
-  else ob.style.display = 'none';
-
-  // Properties table
-  const pt = document.getElementById('dash-properties-table');
-  if (!DATA.properties.length) {
-    pt.innerHTML = `<div class="empty-state"><div class="empty-icon">⌂</div><div class="empty-text">No properties yet.<br>Click "+ Property" to add your first one.</div></div>`;
-  } else {
-    const rows = DATA.properties.slice(0, 5).map(p => {
-      const tenant = DATA.tenants.find(t => t.unit_id === p.id);
-      const paid = tenant && paidIds.has(tenant.id);
-      const badge = p.status === 'rented'
-        ? (paid ? '<span class="badge badge-green">● Paid</span>' : '<span class="badge badge-red">● Overdue</span>')
-        : '<span class="badge badge-amber">◌ Vacant</span>';
-      return `<tr>
-        <td><div class="cell-primary">${p.name}</div><div class="cell-secondary">${p.address || p.type || '—'}</div></td>
-        <td>${tenant ? tenant.name : '—'}</td>
-        <td>${(p.rent || 0).toLocaleString()} QAR</td>
-        <td>${badge}</td>
-        <td>${tenant ? (tenant.contract_end || '—') : '—'}</td>
-      </tr>`;
+  const dpt=document.getElementById('dash-props-table');
+  if(!DATA.properties.length){
+    dpt.innerHTML=`<div class="empty-state"><div class="empty-icon">⌂</div><div class="empty-text">${t('emptyProps').replace('\n','<br>')}</div></div>`;
+  }else{
+    const rows=DATA.properties.slice(0,5).map(p=>{
+      const ten=DATA.tenants.find(x=>x.unit_id===p.id);
+      const paid=ten&&paidIds.has(ten.id);
+      const badge=p.status==='rented'?(paid?`<span class="badge b-green">${t('badgePaid')}</span>`:`<span class="badge b-red">${t('badgeOverdue')}</span>`):`<span class="badge b-amber">${t('badgeVacant')}</span>`;
+      return `<tr><td><div class="cell-p">${p.name}</div><div class="cell-s">${p.address||p.type||'—'}</div></td><td>${ten?ten.name:'—'}</td><td>${(p.rent||0).toLocaleString()} QAR</td><td>${badge}</td><td>${ten?(ten.contract_end||'—'):'—'}</td></tr>`;
     }).join('');
-    pt.innerHTML = `<table class="table"><thead><tr><th>Property</th><th>Tenant</th><th>Rent/mo</th><th>Status</th><th>Expires</th></tr></thead><tbody>${rows}</tbody></table>`;
+    dpt.innerHTML=`<table class="table"><thead><tr><th>${t('colProperty')}</th><th>${t('colTenant')}</th><th>${t('colRent')}</th><th>${t('colStatus')}</th><th>${t('fl-t-end')||'End'}</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
-  // Reminders
-  const rw = document.getElementById('dash-reminders');
-  const reminders = [];
-  DATA.tenants.filter(t => !paidIds.has(t.id)).forEach(t => {
-    reminders.push({ color: 'var(--crimson)', title: `Overdue — ${t.name}`, sub: `${(t.rent||0).toLocaleString()} QAR`, date: 'Now' });
+  const rw=document.getElementById('dash-reminders');
+  const rems=[];
+  DATA.tenants.filter(x=>!paidIds.has(x.id)).forEach(x=>rems.push({c:'var(--crimson)',ti:t('overdueAlert')+x.name,su:`${(x.rent||0).toLocaleString()} QAR`,dt:LANG==='ar'?'اليوم':'Today'}));
+  const now=new Date();
+  DATA.tenants.filter(x=>x.contract_end).forEach(x=>{
+    const days=Math.ceil((new Date(x.contract_end)-now)/86400000);
+    if(days>=0&&days<=60)rems.push({c:'var(--amber)',ti:t('contractExpiring')+x.name,su:days+t('daysLeft'),dt:x.contract_end});
   });
-  const now = new Date();
-  DATA.tenants.filter(t => t.contract_end).forEach(t => {
-    const days = Math.ceil((new Date(t.contract_end) - now) / 86400000);
-    if (days >= 0 && days <= 60) reminders.push({ color: 'var(--amber)', title: `Contract expiring — ${t.name}`, sub: `${days} days left`, date: t.contract_end });
-  });
-  DATA.maintenance.filter(m => m.status !== 'done').forEach(m => {
-    reminders.push({ color: 'var(--sky)', title: `Maintenance — ${m.description}`, sub: m.unit_name || '', date: m.scheduled_date || '—' });
-  });
+  DATA.maintenance.filter(x=>x.status!=='done').forEach(x=>rems.push({c:'var(--sky)',ti:t('maintenanceAlert')+x.description,su:x.unit_name||'',dt:x.scheduled_date||'—'}));
+  rw.innerHTML=rems.length?rems.slice(0,5).map(r=>`<div class="rem"><div class="rem-dot" style="background:${r.c}"></div><div class="rem-body"><div class="rem-title">${r.ti}</div><div class="rem-sub">${r.su}</div></div><div class="rem-date">${r.dt}</div></div>`).join(''):`<div class="empty-state" style="padding:24px"><div class="empty-icon" style="font-size:26px">✓</div><div class="empty-text">${t('allClear')}</div></div>`;
 
-  if (!reminders.length) {
-    rw.innerHTML = `<div class="empty-state" style="padding:28px"><div class="empty-icon" style="font-size:28px">✓</div><div class="empty-text">All clear! No pending alerts.</div></div>`;
-  } else {
-    rw.innerHTML = reminders.slice(0, 5).map(r => `
-      <div class="rem-item">
-        <div class="rem-dot" style="background:${r.color}"></div>
-        <div class="rem-body"><div class="rem-title">${r.title}</div><div class="rem-sub">${r.sub}</div></div>
-        <div class="rem-date">${r.date}</div>
-      </div>`).join('');
-  }
-
-  // Monthly summary
-  const collected = DATA.payments.filter(p => p.month === tm).reduce((s, p) => s + (p.amount || 0), 0);
-  const expected = DATA.tenants.reduce((s, t) => s + (t.rent || 0), 0);
-  const pct = expected > 0 ? Math.round(collected / expected * 100) : 0;
-  document.getElementById('dash-month-summary').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <span style="font-size:12px;color:var(--fg2)">Collected</span>
-      <span style="font-weight:600;color:var(--emerald)">${collected.toLocaleString()} QAR</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <span style="font-size:12px;color:var(--fg2)">Expected</span>
-      <span style="font-weight:600;color:var(--fg2)">${expected.toLocaleString()} QAR</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-top:12px;border-top:1px solid var(--line)">
-      <span style="font-size:12px;color:var(--fg2)">Collection rate</span>
-      <span style="font-weight:700;color:var(--amber)">${pct}%</span>
-    </div>
+  const coll=DATA.payments.filter(p=>p.month===tm).reduce((s,p)=>s+(p.amount||0),0);
+  const exp=DATA.tenants.reduce((s,x)=>s+(x.rent||0),0);
+  const pct=exp>0?Math.round(coll/exp*100):0;
+  document.getElementById('dash-summary').innerHTML=`
+    <div style="display:flex;justify-content:space-between;margin-bottom:11px"><span style="font-size:12px;color:var(--fg2)">${t('collected')}</span><span style="font-weight:600;color:var(--emerald)">${coll.toLocaleString()} QAR</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:11px"><span style="font-size:12px;color:var(--fg2)">${t('expected')}</span><span style="font-weight:600;color:var(--fg2)">${exp.toLocaleString()} QAR</span></div>
+    <div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--line);margin-bottom:11px"><span style="font-size:12px;color:var(--fg2)">${t('collectionRate')}</span><span style="font-weight:700;color:var(--amber)">${pct}%</span></div>
     <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>`;
 }
 
-function renderProperties() {
-  const w = document.getElementById('properties-content');
-  if (!DATA.properties.length) {
-    w.innerHTML = `<div class="empty-state"><div class="empty-icon">⌂</div><div class="empty-text">No properties added yet.<br>Start by adding your first property.</div></div>`;
-    return;
-  }
-  const rows = DATA.properties.map(p => {
-    const tenant = DATA.tenants.find(t => t.unit_id === p.id);
-    const badge = p.status === 'rented' ? '<span class="badge badge-green">Rented</span>' : '<span class="badge badge-amber">Vacant</span>';
-    return `<tr>
-      <td><div class="cell-primary">${p.name}</div><div class="cell-secondary">${p.address || '—'}</div></td>
-      <td><span class="badge badge-sky">${p.type || 'Unit'}</span></td>
-      <td>${tenant ? tenant.name : '—'}</td>
-      <td>${(p.rent || 0).toLocaleString()} QAR</td>
-      <td>${badge}</td>
-      <td><button class="btn btn-red btn-sm" onclick="deleteRecord('units','${p.id}')">Delete</button></td>
-    </tr>`;
+function renderProperties(){
+  const w=document.getElementById('properties-content');
+  if(!DATA.properties.length){w.innerHTML=`<div class="empty-state"><div class="empty-icon">⌂</div><div class="empty-text">${t('emptyProps').replace('\n','<br>')}</div></div>`;return;}
+  const rows=DATA.properties.map(p=>{
+    const ten=DATA.tenants.find(x=>x.unit_id===p.id);
+    return `<tr><td><div class="cell-p">${p.name}</div><div class="cell-s">${p.address||'—'}</div></td><td><span class="badge b-sky">${p.type||'—'}</span></td><td>${ten?ten.name:'—'}</td><td>${(p.rent||0).toLocaleString()} QAR</td><td>${p.status==='rented'?`<span class="badge b-green">${t('badgeRented')}</span>`:`<span class="badge b-amber">${t('badgeVacant')}</span>`}</td><td><button class="btn btn-red btn-sm" onclick="delRec('units','${p.id}')">${LANG==='ar'?'حذف':'Delete'}</button></td></tr>`;
   }).join('');
-  w.innerHTML = `<table class="table"><thead><tr><th>Property</th><th>Type</th><th>Tenant</th><th>Rent/mo</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  w.innerHTML=`<table class="table"><thead><tr><th>${t('colProperty')}</th><th>${t('colType')}</th><th>${t('colTenant')}</th><th>${t('colRent')}</th><th>${t('colStatus')}</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function renderTenants() {
-  const w = document.getElementById('tenants-content');
-  document.getElementById('tenants-sub').textContent = `${DATA.tenants.length} active tenant${DATA.tenants.length !== 1 ? 's' : ''}`;
-  if (!DATA.tenants.length) {
-    w.innerHTML = `<div class="empty-state"><div class="empty-icon">○</div><div class="empty-text">No tenants added yet.</div></div>`;
-    return;
-  }
-  const colors = [['#1a3352','#2b6cb0'],['#2d1b4e','#6b46c1'],['#1a3a2a','#276749'],['#3d2100','#c05621']];
-  const cards = DATA.tenants.map((t, i) => {
-    const prop = DATA.properties.find(p => p.id === t.unit_id);
-    const [c1, c2] = colors[i % colors.length];
-    return `<div class="tenant-card">
-      <div class="t-head">
-        <div class="t-av" style="background:linear-gradient(135deg,${c1},${c2})">${t.name.charAt(0).toUpperCase()}</div>
-        <div><div class="t-name">${t.name}</div><div class="t-unit">${prop ? prop.name : 'No property assigned'}</div></div>
+function renderTenants(){
+  const w=document.getElementById('tenants-content');
+  document.getElementById('tenants-sub').textContent=`${DATA.tenants.length} ${LANG==='ar'?'مستأجر نشط':'active tenant'+(DATA.tenants.length!==1?'s':'')}`;
+  if(!DATA.tenants.length){w.innerHTML=`<div class="empty-state"><div class="empty-icon">○</div><div class="empty-text">${t('emptyTenants')}</div></div>`;return;}
+  const cls=[['#1a3352','#2b6cb0'],['#2d1b4e','#6b46c1'],['#1a3a2a','#276749'],['#3d2100','#c05621']];
+  w.innerHTML=`<div class="tenant-grid">${DATA.tenants.map((ten,i)=>{
+    const prop=DATA.properties.find(p=>p.id===ten.unit_id);
+    const[c1,c2]=cls[i%cls.length];
+    return `<div class="t-card"><div class="t-head"><div class="t-av" style="background:linear-gradient(135deg,${c1},${c2})">${ten.name.charAt(0).toUpperCase()}</div><div><div class="t-name">${ten.name}</div><div class="t-prop">${prop?prop.name:(LANG==='ar'?'لا توجد وحدة':'No property')}</div></div></div>
+    <div class="t-info">
+      <div><div class="ti-label">${t('colRent')}</div><div class="ti-val" style="color:var(--amber)">${(ten.rent||0).toLocaleString()} QAR</div></div>
+      <div><div class="ti-label">${t('colPhone')}</div><div class="ti-val">${ten.phone||'—'}</div></div>
+      <div><div class="ti-label">${t('colContractEnd')}</div><div class="ti-val">${ten.contract_end||'—'}</div></div>
+      <div><div class="ti-label">${t('colQid')}</div><div class="ti-val">${ten.national_id||'—'}</div></div>
+    </div>
+    <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--line);display:flex;justify-content:flex-end">
+      <button class="btn btn-red btn-sm" onclick="delRec('tenants','${ten.id}')">${LANG==='ar'?'حذف':'Remove'}</button>
+    </div></div>`;
+  }).join('')}</div>`;
+}
+
+function renderPayments(){
+  const w=document.getElementById('payments-content');
+  if(!DATA.payments.length){w.innerHTML=`<div class="empty-state"><div class="empty-icon">◈</div><div class="empty-text">${t('emptyPayments')}</div></div>`;return;}
+  const rows=DATA.payments.map(p=>{
+    const ten=DATA.tenants.find(x=>x.id===p.tenant_id);
+    return `<tr><td><div class="cell-p">${ten?ten.name:'—'}</div></td><td style="font-weight:600;color:var(--emerald)">${(p.amount||0).toLocaleString()} QAR</td><td>${p.month||'—'}</td><td><span class="badge b-sky">${p.method||'—'}</span></td><td>${p.payment_date||'—'}</td><td><span class="badge b-green">✓ ${t('colConfirmed')}</span></td><td><button class="btn btn-red btn-sm" onclick="delRec('payments','${p.id}')">${LANG==='ar'?'حذف':'Delete'}</button></td></tr>`;
+  }).join('');
+  w.innerHTML=`<table class="table"><thead><tr><th>${t('colName')}</th><th>${t('colAmount')}</th><th>${t('colMonth')}</th><th>${t('colMethod')}</th><th>${t('colDate')}</th><th>${t('colStatus')}</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderAnalytics(){
+  const w=document.getElementById('analytics-content');
+  const total=DATA.properties.length,occ=DATA.properties.filter(p=>p.status==='rented').length;
+  const pct=total>0?Math.round(occ/total*100):0;
+  const rev=DATA.properties.filter(p=>p.status==='rented').reduce((s,p)=>s+(p.rent||0),0);
+  const byM={};DATA.payments.forEach(p=>{if(!byM[p.month])byM[p.month]=0;byM[p.month]+=p.amount||0;});
+  const months=Object.keys(byM).sort().slice(-5);
+  const maxV=Math.max(...months.map(m=>byM[m]),1);
+  const bars=months.length?months.map(m=>`<div class="chart-row"><div class="chart-label"><span>${m}</span><span>${byM[m].toLocaleString()} QAR</span></div><div class="prog-track"><div class="prog-fill" style="width:${Math.round(byM[m]/maxV*100)}%"></div></div></div>`).join(''):`<div class="empty-state" style="padding:28px"><div class="empty-text">${t('emptyAnalytics')}</div></div>`;
+  w.innerHTML=`
+    <div class="card"><div class="card-head"><span class="card-title">${t('revenueHistory')}</span></div><div style="padding:20px">${bars}</div></div>
+    <div class="card"><div class="card-head"><span class="card-title">${t('portfolioOverview')}</span></div>
+    <div style="padding:34px;text-align:center">
+      <div style="font-family:'Instrument Serif',serif;font-size:76px;line-height:1;color:var(--amber);letter-spacing:-3px">${pct}<span style="font-size:34px">%</span></div>
+      <div style="font-size:13px;color:var(--fg2);margin-top:6px">${t('occupancyRate')}</div>
+      <div style="display:flex;gap:26px;justify-content:center;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
+        <div><div style="font-family:'Instrument Serif',serif;font-size:26px;color:var(--emerald)">${occ}</div><div style="font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:1px;margin-top:2px">${t('occupied')}</div></div>
+        <div><div style="font-family:'Instrument Serif',serif;font-size:26px;color:var(--amber)">${total-occ}</div><div style="font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:1px;margin-top:2px">${t('vacant')}</div></div>
+        <div><div style="font-family:'Instrument Serif',serif;font-size:26px;color:var(--sky)">${rev.toLocaleString()}</div><div style="font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:1px;margin-top:2px">QAR/MO</div></div>
       </div>
-      <div class="t-info">
-        <div><div class="t-info-label">Monthly Rent</div><div class="t-info-val" style="color:var(--amber)">${(t.rent||0).toLocaleString()} QAR</div></div>
-        <div><div class="t-info-label">Phone</div><div class="t-info-val">${t.phone || '—'}</div></div>
-        <div><div class="t-info-label">Contract End</div><div class="t-info-val">${t.contract_end || '—'}</div></div>
-        <div><div class="t-info-label">QID</div><div class="t-info-val">${t.national_id || '—'}</div></div>
-      </div>
-      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:flex-end">
-        <button class="btn btn-red btn-sm" onclick="deleteRecord('tenants','${t.id}')">Remove</button>
-      </div>
-    </div>`;
-  }).join('');
-  w.innerHTML = `<div class="tenant-grid">${cards}</div>`;
+    </div></div>`;
 }
 
-function renderPayments() {
-  const w = document.getElementById('payments-content');
-  if (!DATA.payments.length) {
-    w.innerHTML = `<div class="empty-state"><div class="empty-icon">◈</div><div class="empty-text">No payments recorded yet.</div></div>`;
-    return;
-  }
-  const rows = DATA.payments.map(p => {
-    const t = DATA.tenants.find(x => x.id === p.tenant_id);
-    return `<tr>
-      <td><div class="cell-primary">${t ? t.name : '—'}</div></td>
-      <td style="font-weight:600;color:var(--emerald)">${(p.amount||0).toLocaleString()} QAR</td>
-      <td>${p.month || '—'}</td>
-      <td><span class="badge badge-sky">${p.method || '—'}</span></td>
-      <td>${p.payment_date || '—'}</td>
-      <td><span class="badge badge-green">✓ Confirmed</span></td>
-      <td><button class="btn btn-red btn-sm" onclick="deleteRecord('payments','${p.id}')">Delete</button></td>
-    </tr>`;
+function renderMaintenance(){
+  const w=document.getElementById('maintenance-content');
+  const active=DATA.maintenance.filter(m=>m.status!=='done').length;
+  document.getElementById('maint-sub').textContent=`${active} ${LANG==='ar'?'طلبات نشطة':'open request'+(active!==1?'s':'')}`;
+  if(!DATA.maintenance.length){w.innerHTML=`<div class="empty-state"><div class="empty-icon">⚙</div><div class="empty-text">${t('emptyMaint')}</div></div>`;return;}
+  const rows=DATA.maintenance.map(m=>{
+    const pb=m.priority==='urgent'?`<span class="badge b-red">${t('urgentBadge')}</span>`:m.priority==='medium'?`<span class="badge b-amber">${t('mediumBadge')}</span>`:`<span class="badge b-sky">${t('lowBadge')}</span>`;
+    return `<tr><td>${m.unit_name||'—'}</td><td>${m.description||'—'}</td><td>${pb}</td><td>${m.estimated_cost?(m.estimated_cost.toLocaleString()+' QAR'):'—'}</td><td><span class="badge ${m.status==='done'?'b-green':'b-sky'}">${m.status==='done'?t('badgeDone'):t('badgeOpen')}</span></td><td>${m.scheduled_date||'—'}</td><td><button class="btn btn-red btn-sm" onclick="delRec('maintenance','${m.id}')">${LANG==='ar'?'حذف':'Delete'}</button></td></tr>`;
   }).join('');
-  w.innerHTML = `<table class="table"><thead><tr><th>Tenant</th><th>Amount</th><th>Month</th><th>Method</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  w.innerHTML=`<table class="table"><thead><tr><th>${t('colProperty')}</th><th>${t('colIssue')}</th><th>${t('colPriority')}</th><th>${t('colEstCost')}</th><th>${t('colStatus')}</th><th>${t('colSchedDate')}</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function renderAnalytics() {
-  const w = document.getElementById('analytics-content');
-  const total = DATA.properties.length;
-  const occupied = DATA.properties.filter(p => p.status === 'rented').length;
-  const pct = total > 0 ? Math.round(occupied / total * 100) : 0;
-  const monthlyRev = DATA.properties.filter(p => p.status === 'rented').reduce((s, p) => s + (p.rent || 0), 0);
-  const byMonth = {};
-  DATA.payments.forEach(p => { if (!byMonth[p.month]) byMonth[p.month] = 0; byMonth[p.month] += p.amount || 0; });
-  const months = Object.keys(byMonth).sort().slice(-5);
-  const maxV = Math.max(...months.map(m => byMonth[m]), 1);
-  const bars = months.length
-    ? months.map(m => `<div class="chart-row"><div class="chart-label"><span>${m}</span><span>${byMonth[m].toLocaleString()} QAR</span></div><div class="prog-track"><div class="prog-fill" style="width:${Math.round(byMonth[m]/maxV*100)}%"></div></div></div>`).join('')
-    : `<div class="empty-state" style="padding:30px"><div class="empty-text">No payment data yet.</div></div>`;
-
-  w.innerHTML = `
-    <div class="card"><div class="card-head"><span class="card-title">Revenue History</span></div><div style="padding:22px">${bars}</div></div>
-    <div class="card"><div class="card-head"><span class="card-title">Portfolio Overview</span></div>
-      <div style="padding:36px;text-align:center">
-        <div style="font-family:'Instrument Serif',serif;font-size:80px;line-height:1;color:var(--amber);letter-spacing:-3px">${pct}<span style="font-size:36px">%</span></div>
-        <div style="font-size:13px;color:var(--fg2);margin-top:6px">Occupancy Rate</div>
-        <div style="display:flex;gap:28px;justify-content:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)">
-          <div><div style="font-family:'Instrument Serif',serif;font-size:26px;color:var(--emerald)">${occupied}</div><div style="font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Occupied</div></div>
-          <div><div style="font-family:'Instrument Serif',serif;font-size:26px;color:var(--amber)">${total-occupied}</div><div style="font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Vacant</div></div>
-          <div><div style="font-family:'Instrument Serif',serif;font-size:26px;color:var(--sky)">${monthlyRev.toLocaleString()}</div><div style="font-size:10px;color:var(--fg3);text-transform:uppercase;letter-spacing:1px;margin-top:3px">QAR/mo</div></div>
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderMaintenance() {
-  const w = document.getElementById('maintenance-content');
-  const active = DATA.maintenance.filter(m => m.status !== 'done').length;
-  document.getElementById('maint-sub').textContent = `${active} open request${active !== 1 ? 's' : ''}`;
-  if (!DATA.maintenance.length) {
-    w.innerHTML = `<div class="empty-state"><div class="empty-icon">⚙</div><div class="empty-text">No maintenance requests yet.</div></div>`;
-    return;
-  }
-  const rows = DATA.maintenance.map(m => {
-    const pb = m.priority === 'urgent' ? '<span class="badge badge-red">Urgent</span>' : m.priority === 'medium' ? '<span class="badge badge-amber">Medium</span>' : '<span class="badge badge-sky">Low</span>';
-    return `<tr>
-      <td><div class="cell-primary">${m.unit_name || '—'}</div></td>
-      <td>${m.description || '—'}</td>
-      <td>${pb}</td>
-      <td>${m.estimated_cost ? m.estimated_cost.toLocaleString()+' QAR' : '—'}</td>
-      <td><span class="badge ${m.status==='done'?'badge-green':'badge-sky'}">${m.status==='done'?'Done':'Open'}</span></td>
-      <td>${m.scheduled_date || '—'}</td>
-      <td><button class="btn btn-red btn-sm" onclick="deleteRecord('maintenance','${m.id}')">Delete</button></td>
-    </tr>`;
+function renderContracts(){
+  const w=document.getElementById('contracts-content');
+  if(!DATA.tenants.length){w.innerHTML=`<div class="empty-state"><div class="empty-icon">☰</div><div class="empty-text">${t('emptyContracts')}</div></div>`;return;}
+  const now=new Date();
+  const rows=DATA.tenants.map(ten=>{
+    const prop=DATA.properties.find(p=>p.id===ten.unit_id);
+    let badge=`<span class="badge b-green">${t('badgeActive')}</span>`;
+    if(ten.contract_end){const days=Math.ceil((new Date(ten.contract_end)-now)/86400000);if(days<0)badge=`<span class="badge b-red">${t('badgeExpired')}</span>`;else if(days<60)badge=`<span class="badge b-amber">${t('expiringIn')}${days}${t('d')}</span>`;}
+    return `<tr><td><div class="cell-p">${ten.name}</div><div class="cell-s">${ten.email||'—'}</div></td><td>${prop?prop.name:'—'}</td><td>${(ten.rent||0).toLocaleString()} QAR</td><td>${ten.contract_start||'—'}</td><td>${ten.contract_end||'—'}</td><td>${badge}</td></tr>`;
   }).join('');
-  w.innerHTML = `<table class="table"><thead><tr><th>Property</th><th>Issue</th><th>Priority</th><th>Est. Cost</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-
-function renderContracts() {
-  const w = document.getElementById('contracts-content');
-  if (!DATA.tenants.length) {
-    w.innerHTML = `<div class="empty-state"><div class="empty-icon">☰</div><div class="empty-text">No contracts yet.</div></div>`;
-    return;
-  }
-  const now = new Date();
-  const rows = DATA.tenants.map(t => {
-    const prop = DATA.properties.find(p => p.id === t.unit_id);
-    let badge = '<span class="badge badge-green">Active</span>';
-    if (t.contract_end) {
-      const days = Math.ceil((new Date(t.contract_end) - now) / 86400000);
-      if (days < 0) badge = '<span class="badge badge-red">Expired</span>';
-      else if (days < 60) badge = `<span class="badge badge-amber">Expiring in ${days}d</span>`;
-    }
-    return `<tr>
-      <td><div class="cell-primary">${t.name}</div><div class="cell-secondary">${t.email || '—'}</div></td>
-      <td>${prop ? prop.name : '—'}</td>
-      <td>${(t.rent||0).toLocaleString()} QAR/mo</td>
-      <td>${t.contract_start || '—'}</td>
-      <td>${t.contract_end || '—'}</td>
-      <td>${badge}</td>
-    </tr>`;
-  }).join('');
-  w.innerHTML = `<table class="table"><thead><tr><th>Tenant</th><th>Property</th><th>Rent</th><th>Start</th><th>End</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+  w.innerHTML=`<table class="table"><thead><tr><th>${t('colName')}</th><th>${t('colProperty')}</th><th>${t('colRent')}</th><th>${t('colStart')}</th><th>${t('colEnd')}</th><th>${t('colStatus')}</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 // ======== SAVE ========
-async function saveProperty() {
-  const name = document.getElementById('p-name').value.trim();
-  if (!name) return showToast('Property name is required', true);
-  const { error } = await db.from('units').insert([{
-    user_id: USER.id, name,
-    type: document.getElementById('p-type').value,
-    rent: parseFloat(document.getElementById('p-rent').value) || 0,
-    status: document.getElementById('p-status').value,
-    address: document.getElementById('p-addr').value.trim(),
-    size: parseFloat(document.getElementById('p-size').value) || null,
-    bedrooms: parseInt(document.getElementById('p-beds').value) || null,
-  }]);
-  if (error) return showToast('Error: ' + error.message, true);
-  closeModal('property-modal');
-  ['p-name','p-rent','p-addr','p-size','p-beds'].forEach(id => document.getElementById(id).value = '');
-  await fetchAll();
-  showToast('Property added successfully!');
+async function saveProperty(){
+  const name=document.getElementById('p-name').value.trim();
+  if(!name)return showToast(t('errPropName'),true);
+  const{error}=await db.from('units').insert([{user_id:USER.id,name,type:document.getElementById('p-type').value,rent:parseFloat(document.getElementById('p-rent').value)||0,status:document.getElementById('p-status').value,address:document.getElementById('p-addr').value.trim(),size:parseFloat(document.getElementById('p-size').value)||null,bedrooms:parseInt(document.getElementById('p-beds').value)||null}]);
+  if(error)return showToast('Error: '+error.message,true);
+  closeModal('property-modal');['p-name','p-rent','p-addr','p-size','p-beds'].forEach(id=>document.getElementById(id).value='');
+  await fetchAll();showToast(t('toastSavedProp'));
 }
 
-async function saveTenant() {
-  const name = document.getElementById('t-name').value.trim();
-  if (!name) return showToast('Tenant name is required', true);
-  const propId = document.getElementById('t-prop').value;
-  const { error } = await db.from('tenants').insert([{
-    user_id: USER.id, name,
-    phone: document.getElementById('t-phone').value.trim(),
-    national_id: document.getElementById('t-id').value.trim(),
-    email: document.getElementById('t-email').value.trim(),
-    unit_id: propId || null,
-    rent: parseFloat(document.getElementById('t-rent').value) || 0,
-    contract_start: document.getElementById('t-start').value || null,
-    contract_end: document.getElementById('t-end').value || null,
-  }]);
-  if (error) return showToast('Error: ' + error.message, true);
-  if (propId) await db.from('units').update({ status: 'rented' }).eq('id', propId);
-  closeModal('tenant-modal');
-  await fetchAll();
-  showToast('Tenant added!');
+async function saveTenant(){
+  const name=document.getElementById('t-name').value.trim();
+  if(!name)return showToast(t('errTenantName'),true);
+  const pid=document.getElementById('t-prop').value;
+  const{error}=await db.from('tenants').insert([{user_id:USER.id,name,phone:document.getElementById('t-phone').value.trim(),national_id:document.getElementById('t-id').value.trim(),email:document.getElementById('t-email').value.trim(),unit_id:pid||null,rent:parseFloat(document.getElementById('t-rent').value)||0,contract_start:document.getElementById('t-start').value||null,contract_end:document.getElementById('t-end').value||null}]);
+  if(error)return showToast('Error: '+error.message,true);
+  if(pid)await db.from('units').update({status:'rented'}).eq('id',pid);
+  closeModal('tenant-modal');await fetchAll();showToast(t('toastSavedTenant'));
 }
 
-async function savePayment() {
-  const tenantId = document.getElementById('pay-tenant').value;
-  const amount = parseFloat(document.getElementById('pay-amount').value) || 0;
-  if (!tenantId || !amount) return showToast('Please select a tenant and enter amount', true);
-  const { error } = await db.from('payments').insert([{
-    user_id: USER.id, tenant_id: tenantId, amount,
-    method: document.getElementById('pay-method').value,
-    month: document.getElementById('pay-month').value,
-    payment_date: document.getElementById('pay-date').value || null,
-    notes: document.getElementById('pay-notes').value.trim(),
-  }]);
-  if (error) return showToast('Error: ' + error.message, true);
-  closeModal('payment-modal');
-  await fetchAll();
-  showToast('Payment recorded!');
+async function savePayment(){
+  const tid=document.getElementById('pay-tenant').value,amt=parseFloat(document.getElementById('pay-amount').value)||0;
+  if(!tid||!amt)return showToast(t('errPayFields'),true);
+  const{error}=await db.from('payments').insert([{user_id:USER.id,tenant_id:tid,amount:amt,method:document.getElementById('pay-method').value,month:document.getElementById('pay-month').value,payment_date:document.getElementById('pay-date').value||null,notes:document.getElementById('pay-notes').value.trim()}]);
+  if(error)return showToast('Error: '+error.message,true);
+  closeModal('payment-modal');await fetchAll();showToast(t('toastSavedPayment'));
 }
 
-async function saveMaintenance() {
-  const desc = document.getElementById('m-desc').value.trim();
-  if (!desc) return showToast('Please describe the issue', true);
-  const propId = document.getElementById('m-prop').value;
-  const prop = DATA.properties.find(p => p.id === propId);
-  const { error } = await db.from('maintenance').insert([{
-    user_id: USER.id,
-    unit_id: propId || null,
-    unit_name: prop ? prop.name : '',
-    description: desc,
-    priority: document.getElementById('m-priority').value,
-    scheduled_date: document.getElementById('m-date').value || null,
-    estimated_cost: parseFloat(document.getElementById('m-cost').value) || null,
-    status: 'open',
-  }]);
-  if (error) return showToast('Error: ' + error.message, true);
-  closeModal('maintenance-modal');
-  await fetchAll();
-  showToast('Maintenance request submitted!');
+async function saveMaintenance(){
+  const desc=document.getElementById('m-desc').value.trim();
+  if(!desc)return showToast(t('errMaintDesc'),true);
+  const pid=document.getElementById('m-prop').value;
+  const prop=DATA.properties.find(p=>p.id===pid);
+  const{error}=await db.from('maintenance').insert([{user_id:USER.id,unit_id:pid||null,unit_name:prop?prop.name:'',description:desc,priority:document.getElementById('m-priority').value,scheduled_date:document.getElementById('m-date').value||null,estimated_cost:parseFloat(document.getElementById('m-cost').value)||null,status:'open'}]);
+  if(error)return showToast('Error: '+error.message,true);
+  closeModal('maintenance-modal');await fetchAll();showToast(t('toastSavedMaint'));
 }
 
-async function deleteRecord(table, id) {
-  if (!confirm('Are you sure you want to delete this record?')) return;
-  await db.from(table).delete().eq('id', id);
-  await fetchAll();
-  showToast('Record deleted.');
+async function delRec(table,id){
+  if(!confirm(t('confirmDelete')))return;
+  await db.from(table).delete().eq('id',id);
+  await fetchAll();showToast(t('toastDeleted'));
 }
 
 // ======== UI ========
-function showView(name, el) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (el) el.classList.add('active');
+function showView(name,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
   populateSelects();
 }
 
-function openModal(id) {
-  populateSelects();
-  document.getElementById(id).classList.add('open');
-}
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id){populateSelects();document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
 
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
-});
-
-function populateSelects() {
-  const propOpts = DATA.properties.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-  ['t-prop', 'm-prop'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = '<option value="">— Select Property —</option>' + propOpts;
-  });
-  const tenantOpts = DATA.tenants.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-  const ps = document.getElementById('pay-tenant');
-  if (ps) ps.innerHTML = '<option value="">— Select Tenant —</option>' + tenantOpts;
+function populateSelects(){
+  const po=DATA.properties.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  ['t-prop','m-prop'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<option value="">—</option>`+po;});
+  const to=DATA.tenants.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  const ps=document.getElementById('pay-tenant');if(ps)ps.innerHTML=`<option value="">—</option>`+to;
 }
 
-let toastTimer;
-function showToast(msg, isError = false) {
-  clearTimeout(toastTimer);
-  const t = document.getElementById('toast');
-  document.getElementById('t-msg').textContent = msg;
-  document.getElementById('t-icon').textContent = isError ? '✕' : '✓';
-  t.className = 'toast' + (isError ? ' is-error' : '');
-  t.classList.add('show');
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+let _tt;
+function showToast(msg,isErr=false){
+  clearTimeout(_tt);
+  const el=document.getElementById('toast');
+  document.getElementById('t-msg').textContent=msg;
+  document.getElementById('t-icon').textContent=isErr?'✕':'✓';
+  el.className='toast'+(isErr?' is-err':'');
+  el.classList.add('show');
+  _tt=setTimeout(()=>el.classList.remove('show'),3500);
 }
 
-// BOOT
 init();
 </script>
 </body>
